@@ -23,7 +23,7 @@
 <body>
   <header>
     <h1>성일정보고등학교<br> 학과별 피드보드</h1>
-    
+
     <div class="header-controls">
       <div class="auth-area">
         <button id="loginBtn">Google 로그인</button>
@@ -31,7 +31,6 @@
         <button id="openPostModal" class="write-btn" style="display:none;">게시글 작성</button>
       </div>
 
-      <!-- ✅ 학과 선택 셀렉트 -->
       <select id="deptSelect" class="dept-select">
         <option value="">학과 선택</option>
         <option value="학과체험">학과체험</option>
@@ -47,6 +46,21 @@
   </header>
 
   <main>
+    <!-- HTML: main 태그 안쪽 상단에 추가 -->
+    <section id="mobileIntro" class="mobile-intro-area" style="display:none;">
+      <div class="intro-slider">
+        <!-- 슬라이드 될 이미지 4장 -->
+        <div class="intro-slide active"><img src="images/model1.jpg" alt="intro1"></div>
+        <div class="intro-slide"><img src="images/model2.jpg" alt="intro2"></div>
+        <div class="intro-slide"><img src="images/model3.jpg" alt="intro3"></div>
+        <div class="intro-slide"><img src="images/model4.jpg" alt="intro4"></div>
+      </div>
+      <div class="intro-overlay">
+        <p>성일정보고등학교</p>
+        <span>잠시 후 학과 선택 화면으로 이동합니다...</span>
+      </div>
+    </section>
+
     <section id="mobileMenu" class="mobile-menu-area">
       <p class="menu-notice">알고 싶은 학과를 선택해 주세요!</p>
       <div class="menu-grid">
@@ -61,7 +75,6 @@
       </div>
     </section>
 
-    <!-- 학과별 피드 보드 -->
     <section class="board" id="mainBoard">
       <section class="column 학과체험"><h2>학과체험</h2></section>
       <section class="column 뷰티스마트케어과"><h2>뷰티스마트케어과</h2></section>
@@ -74,7 +87,6 @@
     </section>
   </main>
 
-  <!-- ✅ 게시글 작성/수정 모달 -->
   <div id="postModal" class="modal">
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
@@ -97,12 +109,11 @@
         <label>제목</label>
         <input type="text" id="title" placeholder="제목을 입력하세요" required />
 
-        <!-- ✅ Quill 리치 텍스트 에디터 -->
         <label>내용</label>
         <div id="quillEditor"></div>
 
-        <!-- ✅ 이미지 첨부 -->
         <label>이미지 첨부</label>
+        <p class="image-upload-note">크롭 비율이 16:9로 완화됩니다.</p>
         <button type="button" id="uploadWidgetBtn">이미지 선택 / 자르기</button>
         <img id="previewImage"
           style="display:none; width:100%; height:160px; object-fit:cover; border-radius:8px; margin-top:8px;">
@@ -116,7 +127,6 @@
 
   <button id="scrollTopBtn" class="scroll-top-btn"><i class="fa-solid fa-arrow-up"></i></button>
 
-  <!-- ✅ 메인 스크립트 -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
