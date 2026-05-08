@@ -657,3 +657,176 @@ button:active {
     display: block; /* 모바일 상단에서 언제든 과 이동 가능 */
   }
 }
+
+.card img {
+  aspect-ratio: 16 / 9;
+}
+
+.image-upload-note {
+  margin: 6px 0 8px;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+/*
+ * 글자 크기: 카드 본문은 .ql-editor 밖이라 에디터와 같은 규칙을 카드에서도 명시해야 함.
+ * 6단계 — sm(Normal보다 1단 작음) · Normal(클래스 없음) · up1~up4(Normal보다 크게 세분).
+ * 과거 게시글(Quill 기본 small/large/huge) 호환 유지.
+ */
+#postModal .ql-container.ql-snow .ql-editor .ql-size-sm,
+.card-content .content .ql-size-sm {
+  font-size: 0.875em;
+}
+#postModal .ql-container.ql-snow .ql-editor .ql-size-up1,
+.card-content .content .ql-size-up1 {
+  font-size: 1.08em;
+}
+#postModal .ql-container.ql-snow .ql-editor .ql-size-up2,
+.card-content .content .ql-size-up2 {
+  font-size: 1.18em;
+}
+#postModal .ql-container.ql-snow .ql-editor .ql-size-up3,
+.card-content .content .ql-size-up3 {
+  font-size: 1.32em;
+}
+#postModal .ql-container.ql-snow .ql-editor .ql-size-up4,
+.card-content .content .ql-size-up4 {
+  font-size: 1.48em;
+}
+
+.card-content .content .ql-size-small {
+  font-size: 0.75em;
+}
+.card-content .content .ql-size-large {
+  font-size: 1.5em;
+}
+.card-content .content .ql-size-huge {
+  font-size: 2.5em;
+}
+
+/* 게시 모달 폭 안에 툴바가 들어가게 — 글자 크기 피커만 폭 축소 + 줄바꿈 */
+#postModal .ql-toolbar.ql-snow {
+  flex-wrap: wrap !important;
+  row-gap: 4px;
+  column-gap: 2px;
+}
+
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 5.5rem !important;
+  flex-shrink: 1 !important;
+}
+
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label {
+  padding-left: 4px !important;
+  padding-right: 14px !important;
+  font-size: 11px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-options {
+  max-width: 8.75rem;
+  padding: 4px !important;
+}
+
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item {
+  padding: 4px 6px !important;
+  font-size: 11px !important;
+}
+
+/* 크기 선택기 한글 표시 */
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="sm"]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="sm"]::before {
+  content: "작게";
+}
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="false"]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label:not([data-value])::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=""]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="false"]::before {
+  content: "표준";
+}
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="up1"]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="up1"]::before {
+  content: "조금 큼";
+}
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="up2"]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="up2"]::before {
+  content: "큼";
+}
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="up3"]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="up3"]::before {
+  content: "많이 큼";
+}
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="up4"]::before,
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="up4"]::before {
+  content: "아주 큼";
+}
+
+#postModal .ql-toolbar.ql-snow .ql-picker.ql-size .ql-picker-label::before {
+  margin-right: 2px;
+}
+
+@media (max-width: 768px) {
+  .mobile-intro-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000; /* 로딩 중 어색하지 않게 블랙 처리 */
+    z-index: 10000;   /* 최상단 고정 */
+    overflow: hidden;
+  }
+
+  .intro-slider {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .intro-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out; /* 부드러운 교체 */
+  }
+
+  .intro-slide.active {
+    opacity: 1;
+  }
+
+  .intro-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 비율 유지하며 화면 꽉 채움 */
+    object-position: center; /* 이미지 중앙 기준 */
+  }
+
+  /* 이미지 위에 겹쳐질 안내 문구 스타일 */
+  .intro-overlay {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5); /* 글씨 가독성 */
+    z-index: 10001;
+  }
+
+  .intro-overlay p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .intro-overlay span {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+}
