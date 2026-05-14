@@ -21,68 +21,8 @@
     </style>
 </head>
 <body>
-<div class="carnation-container">
-    <div class="icon">🌺</div>
-    <h2>선생님, 감사합니다!</h2>
-    <p>스승의 날을 맞아 마음을 전해보세요.</p>
-
-    <!-- 받는 사람 추가 -->
-    <div class="input-group">
-        <label>받는 선생님</label>
-        <input type="text" id="target" maxlength="15" placeholder="예: 김사랑 선생님" autocomplete="off">
+    <div>
+        스승의 날 메세지 보내기 이벤트 종료
     </div>
-
-    <!-- 보내는 사람 -->
-    <div class="input-group">
-        <label>보내는 학생 (학년/반/이름)</label>
-        <input type="text" id="name" maxlength="15" placeholder="예: 1학년 1반 박으뜸" autocomplete="off">
-    </div>
-
-    <!-- 내용 -->
-    <div class="input-group">
-        <label>감사 메시지 (최대 70자)</label>
-        <textarea id="content" rows="3" maxlength="70" placeholder="따뜻한 마음을 담아주세요"></textarea>
-    </div>
-
-    <button onclick="send()">🌺 마음 전송하기</button>
-</div>
-
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyfblCa3JSYO9HyVSSkBQ_UW5MZWqjoB5tpUnVpFiicfW6sx60u9BeoFLzbatq_Npzn/exec"; 
-
-    function send() {
-        const target = document.getElementById('target').value;
-        const name = document.getElementById('name').value;
-        const content = document.getElementById('content').value;
-        const btn = document.querySelector('button');
-
-        if(!target || !name || !content) { 
-            alert("모든 항목을 입력해주세요!"); 
-            return; 
-        }
-
-        btn.disabled = true; 
-        btn.innerText = "전송 중...";
-
-        fetch(API_URL, { 
-            method: "POST", 
-            body: JSON.stringify({ 
-                target: target, // 받는 사람 추가
-                name: name, 
-                content: content 
-            }) 
-        })
-        .then(res => res.json())
-        .then(data => {
-            alert("선생님께 마음이 전달되었습니다!"); 
-            location.reload();
-        })
-        .catch(err => { 
-            alert("오류 발생: " + err); 
-            btn.disabled = false; 
-            btn.innerText = "🌺 마음 전송하기";
-        });
-    }
-</script>
 </body>
 </html>
