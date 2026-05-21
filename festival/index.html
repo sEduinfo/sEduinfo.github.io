@@ -45,7 +45,7 @@
             margin-bottom: 12px;
         }
 
-        /* [핵심] 축제 부스 / 축제 공연 탭 메뉴 스위치 */
+        /* 축제 부스 / 축제 공연 탭 메뉴 스위치 */
         .tab-menu {
             display: flex;
             width: 100%;
@@ -335,25 +335,21 @@
     </div>
 
     <script>
-        // 1. 부스/공연 탭 메뉴 변환 처리 함수
+        // 1. [수정 완료] 부스/공연 탭 메뉴 변환 처리 함수
         function switchTab(tabName) {
-            // 버튼 상태 초기화 및 활성화
             const buttons = document.querySelectorAll('.tab-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             
-            // 콘텐츠 구역 초기화
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(sec => sec.classList.remove('active'));
 
             if (tabName === 'booth') {
                 buttons[0].classList.add('active');
-                document.getElementById('boothSection').add('active');
-                document.getElementById('boothSection').classList.add('active');
+                document.getElementById('boothSection').classList.add('active'); // 오타 제거
             } else {
                 buttons[1].classList.add('active');
                 document.getElementById('concertSection').classList.add('active');
             }
-            // 탭 교체 시 상단으로 스크롤바 이동
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
