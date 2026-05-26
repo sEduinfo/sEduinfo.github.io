@@ -18,31 +18,7 @@
 </head>
 <body>
 <div class="memo-container">
-    <h2>💌 응원 메시지</h2>
-    <div class="input-group">
-        <label>보내는 사람 (최대 10자)</label>
-        <input type="text" id="name" maxlength="10" placeholder="이름을 적어주세요" autocomplete="off">
-    </div>
-    <div class="input-group">
-        <label>내용 (최대 70자)</label>
-        <textarea id="content" maxlength="70" placeholder="따뜻한 한마디를 남겨주세요"></textarea>
-    </div>
-    <button onclick="send()">전송하기</button>
+    <h2>💌 응원 메시지 보내기 종료</h2>
 </div>
-
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyDZG5lEbpFfgpKlKNnQ2dVR6TgnCN-g9hujI5DyrTQx-Qw7hGqmYgJixLwScoFyL8_0w/exec"; 
-    function send() {
-        const name = document.getElementById('name').value;
-        const content = document.getElementById('content').value;
-        const btn = document.querySelector('button');
-        if(!name || !content) { alert("내용을 입력해주세요!"); return; }
-        btn.disabled = true; btn.innerText = "전송 중...";
-        fetch(API_URL, { method: "POST", body: JSON.stringify({ name: name, content: content }) })
-        .then(res => res.json()).then(() => {
-            alert("전달되었습니다!"); location.reload();
-        }).catch(() => { alert("오류 발생"); btn.disabled = false; });
-    }
-</script>
 </body>
 </html>
