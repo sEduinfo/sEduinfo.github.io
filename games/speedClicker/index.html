@@ -382,16 +382,16 @@
     // 구글 스프레드시트 배포 주소 연동 완료
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyaFkeO8wBPnCwqp81-xz6BiWn__8lYwBNz4OlSvq7ISxgUiJky1gpm4yXXJTEXIP8b6g/exec";
 
+    // 🎯 [학과 데이터 리뉴얼] 성일정보고 실제 학과(정답) vs 타교/더미 학과(오답)
     const moleData = {
         correct: [
-            "1인 1디바이스 지원", "최신식 컴퓨터 실습실", "대기업/공기업 취업", 
-            "존맛탱 명품 급식", "재밌는 동아리 활동", "자격증 취득 지원", 
-            "쾌적한 메이커 스페이스", "웹디자인/AI/정보보안"
+            "성일정보고", "뷰티디자인과", "부사관과", "글로벌경영과", 
+            "회계정보과", "창업마케팅과", "AI게임콘텐츠과", "소프트웨어개발과"
         ],
         wrong: [
-            "노후된 컴퓨터실", "매일 아침 0교시", "두발/복장 불시단속", 
-            "칙칙한 분필 칠판", "우주항공학과", "지루한 야간자율학습",
-            "매점 없는 학교", "교과서 위주 주입식"
+            "노후화네트워크과", "우주항공학과", "기계자동차과", "호텔조리과", 
+            "웹툰애니메이션과", "스마트팩토리과", "미디어콘텐츠과", "시각디자인과",
+            "컴퓨터보안과", "패션디자인과", "항공서비스과", "실용음악과"
         ]
     };
 
@@ -615,7 +615,7 @@
         }
 
         activeMoleIndex = Math.floor(Math.random() * 9);
-        currentMoleType = Math.random() > 0.3 ? 'correct' : 'wrong';
+        currentMoleType = Math.random() > 0.2 ? 'correct' : 'wrong';
         
         const list = moleData[currentMoleType];
         const text = list[Math.floor(Math.random() * list.length)];
