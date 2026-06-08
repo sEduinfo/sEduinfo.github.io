@@ -79,15 +79,37 @@
             100% { transform: translateY(0px); }
         }
 
-        /* 글로벌 상단 헤더 영역 (소리 아이콘) */
-        .global-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: flex-end; padding: 15px 20px; z-index: 500; }
-        .sound-toggle-btn { 
-            background: rgba(31, 41, 55, 0.6); border: 1px solid rgba(156, 163, 175, 0.5); border-radius: 50%; 
-            width: 44px; height: 44px; font-size: 20px; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; color: white;
-            transition: all 0.2s; box-shadow: 0 0 10px rgba(255,255,255,0.05);
+        .global-header { 
+            width: auto;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 500; 
         }
-        .sound-toggle-btn.muted { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
+        
+        /* [CSS 수정] 중학생들이 한눈에 알아보고 누를 수 있는 네온 뱃지 스타일 */
+        .sound-toggle-btn { 
+            font-family: 'Gamja Flower', sans-serif;
+            background: rgba(239, 68, 68, 0.25); /* 기본 음소거 상태는 붉은빛 */
+            border: 2px solid #ef4444; 
+            border-radius: 20px; 
+            padding: 4px 12px;
+            font-size: 14px; 
+            font-weight: bold;
+            cursor: pointer; 
+            color: white;
+            display: flex; justify-content: center; align-items: center; gap: 5px;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            transition: all 0.2s;
+        }
+        /* 사운드가 켜졌을 때: 에메랄드 녹색 네온으로 변경 */
+        .sound-toggle-btn.muted { background: rgba(239, 68, 68, 0.25); border-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        /* 자바스크립트에서 .muted 클래스를 떼어낼 때 적용될 활성화 스타일 */
+        .sound-toggle-btn:not(.muted) { 
+            background: rgba(16, 185, 129, 0.3); 
+            border-color: #10b981; 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); 
+        }
 
         /* --- 게임화면 HUD 레이아웃 --- */
         #game-hud { width: 90vw; max-width: 380px; margin-bottom: 20px; text-align: left; margin-top: 40px; }
@@ -166,6 +188,16 @@
         .agree-box input { margin-right: 8px; width: 18px; height: 18px; cursor: pointer; }
 
         .welcome-back-msg { background: rgba(37, 99, 235, 0.15); border: 1px dashed #3b82f6; color: #60a5fa; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; width: 100%; text-align: center; display: none; }
+
+        #reset-game-btn {
+            display: inline-block;
+            margin-top: 15px;
+            color: #9ca3af; 
+            font-size: 15px; 
+            text-decoration: underline; 
+            cursor: pointer;
+            transition: color 0.2s;
+        }
         
         /* 커스텀 스크롤바 세팅 (폼, 뱃지 영역용) */
         ::-webkit-scrollbar { width: 6px; }
@@ -186,7 +218,7 @@
         </div>
 
         <h1>SUNGIL<br>SPACE CLICKER</h1>
-        <p>은하계 탐사 대작전! 30초 동안<br><strong>성일정보고의 대박 장점 행성들만</strong><br>광속으로 터치해 파괴하세요!<br><br><span style="color:#f43f5e; font-weight: bold;">⚠️ 블랙홀 함정 카드는 감점 처리됩니다!</span></p>
+        <p>은하계 탐사 대작전!<br><strong>30초 동안 성일정보고의 대박 장점 행성들만</strong><br>광속으로 터치해 파괴하세요!<br><br><span style="color:#f43f5e; font-weight: bold;">⚠️ 블랙홀 함정 카드는 감점 처리됩니다!</span></p>
         <button class="btn" onclick="startGame()">START MISSION</button>
     </div>
 
@@ -199,7 +231,7 @@
         </div>
         
         <div class="game-board-wrapper">
-            <div class="grid">
+            <div class="grid" onclick="clickEmptyBoard()">
                 <div class="hole" id="h0"><div class="mole" onclick="clickMole(0)"></div></div>
                 <div class="hole" id="h1"><div class="mole" onclick="clickMole(1)"></div></div>
                 <div class="hole" id="h2"><div class="mole" onclick="clickMole(2)"></div></div>
@@ -268,6 +300,7 @@
         </div>
 
         <button class="btn" id="submit-btn" onclick="submitRanking()">RANKING REGISTRY</button>
+        <a href="#" id="reset-game-btn" onclick="resetToMainMenu(); return false;">등록 없이 처음 화면으로 돌아가기</a>
     </div>
 
 </div>
@@ -297,10 +330,11 @@
     let currentMoleType = null; 
     let isSubmitting = false;
     
-    // [수정] 단계(Level) 및 속도 시스템 변수
+    // 단계 및 사운드 제어 시스템
     let currentLevel = 1; 
-    let currentSpeed = 1000; // 1단계 기본 속도 (1초)
+    let currentSpeed = 1000; 
     let isSoundEnabled = false;
+    let hasTimeBonusTriggered = false; // 250점 5초 보너스가 중복 적용되는 것 방지용 플래그
 
     // 사운드 파일 에셋 로드 세팅
     const audioBGM = new Audio('bgm.mp3');
@@ -341,13 +375,14 @@
         document.getElementById(screenId).classList.add('active');
     }
 
-    // 게임 시작
+    // 게임 시작 시 초기화
     function startGame() {
         score = 0;
         timeLeft = 30.0;
-        currentLevel = 1;   // 1단계 시작
-        currentSpeed = 1000; // 초기 속도 1초
+        currentLevel = 1;   
+        currentSpeed = 1000; 
         isSubmitting = false;
+        hasTimeBonusTriggered = false; // 보너스 플래그 초기화
         
         document.getElementById('score-num').innerText = score;
         updateTimerUI();
@@ -369,56 +404,80 @@
                 endGame();
                 return;
             }
-            
             updateTimerUI();
-            checkLevelSystem(); // [추가] 매 0.1초마다 시간이 줄어들며 단계를 체크합니다.
-
         }, 100);
 
         popMoleLoop();
     }
 
-    // [추가] 1단계(30~20초), 2단계(20~10초), 3단계(10~0초) 관리 시스템
+    // 🎯 [핵심 수정] 기획안에 맞춘 실시간 점수 기반 단계 및 속도 제어 함수
     function checkLevelSystem() {
-        // 2단계 진입 조건 (남은 시간 20초 이하이고, 아직 1단계일 때)
-        if (timeLeft <= 20.0 && timeLeft > 10.0 && currentLevel === 1) {
-            currentLevel = 2;
-            currentSpeed = 850; // 2단계 속도 향상 (0.65초마다 등장)
-            triggerSpeedUpEffect("LEVEL 2", "SPEED UP!");
+        // [250점 기믹] 250점 돌파 시 5초 추가 연출 (딱 한 번만 실행되도록 플래그 처리)
+        if (score >= 250 && !hasTimeBonusTriggered) {
+            hasTimeBonusTriggered = true;
+            timeLeft += 5.0; // 5초 추가
+            triggerSpeedUpEffect("TIME BONUS", "+5 SECONDS!");
+        }
+
+        // 1단계: 0점 ~ 99점 구간 (속도 1000ms)
+        if (score < 100) {
+            currentLevel = 1;
+            currentSpeed = 1000;
+        }
+        // 2단계: 100점 ~ 199점 구간 (속도 700ms)
+        else if (score >= 100 && score < 200) {
+            if (currentLevel !== 2) {
+                currentLevel = 2;
+                currentSpeed = 700;
+                triggerSpeedUpEffect("LEVEL 2", "SPEED UP!");
+            }
         } 
-        // 3단계 진입 조건 (남은 시간 10초 이하이고, 아직 2단계일 때)
-        else if (timeLeft <= 10.0 && currentLevel === 2) {
-            currentLevel = 3;
-            currentSpeed = 650; // 3단계 광속 모드 (0.43초마다 등장)
-            triggerSpeedUpEffect("FINAL LEVEL", "CRAZY SPEED!!");
+        // 3단계: 200점 ~ 299점 구간 (속도 550ms)
+        else if (score >= 200 && score < 300) {
+            if (currentLevel !== 3) {
+                currentLevel = 3;
+                currentSpeed = 550;
+                triggerSpeedUpEffect("LEVEL 3", "SPEED UP!");
+            }
+        }
+        // 4단계: 300점 ~ 399점 구간 (속도 420ms)
+        else if (score >= 300 && score < 400) {
+            if (currentLevel !== 4) {
+                currentLevel = 4;
+                currentSpeed = 420;
+                triggerSpeedUpEffect("LEVEL 4", "SPEED UP!");
+            }
+        }
+        // 5단계: 400점 이상 최종 보너스 스퍼트 모드 (속도 330ms)
+        else if (score >= 400) {
+            if (currentLevel !== 5) {
+                currentLevel = 5;
+                currentSpeed = 330;
+                triggerSpeedUpEffect("BONUS MODE", "GOD SPEED!!!");
+            }
         }
     }
 
-    // [추가] 판 위로 SPEED UP 문구를 띄워주는 시각 효과 함수
     function triggerSpeedUpEffect(titleText, subText) {
         const effectLayer = document.getElementById('full-screen-effect');
         const effectSymbol = document.getElementById('effect-symbol');
         const effectScore = document.getElementById('effect-score');
 
-        // 기존 이펙트 클래스 초기화
         effectLayer.classList.remove('animate-correct', 'animate-wrong');
-        void effectLayer.offsetWidth; // 애니메이션 리셋 트리거
+        void effectLayer.offsetWidth; 
 
-        // O, X 대신 LEVEL 문구와 SPEED UP 세팅
         effectSymbol.innerText = titleText;
-        effectSymbol.style.fontSize = "50px"; // 글자가 기니까 폰트 크기 조절
-        effectSymbol.style.color = "#f59e0b"; // 경고/업그레이드 느낌의 주황/노란 네온
+        effectSymbol.style.fontSize = "45px"; 
+        effectSymbol.style.color = "#f59e0b"; 
         effectSymbol.style.textShadow = "0 0 20px #f59e0b, 0 0 40px #d97706";
 
         effectScore.innerText = subText;
         effectScore.style.color = "#fff";
         effectScore.style.fontSize = "32px";
-        effectScore.style.textShadow = "0 0 15px #f43f5e"; // 핫핑크 네온 스피드업
+        effectScore.style.textShadow = "0 0 15px #f43f5e"; 
 
-        // 정답 이펙트 애니메이션(커지면서 부드럽게 사라짐)을 빌려서 연출
         effectLayer.classList.add('animate-correct');
 
-        // 이펙트가 끝나면 다음 유저 클릭 시 O, X가 정상 크기로 나오도록 원래 스타일로 복구 예약
         setTimeout(() => {
             effectSymbol.style.fontSize = "";
             effectSymbol.style.color = "";
@@ -430,13 +489,15 @@
     }
 
     function updateTimerUI() {
-        const percentage = (timeLeft / 30) * 100;
+        const percentage = (timeLeft / 35) * 100; // 5초 추가 대응을 고려한 비율 계산
         const barElement = document.getElementById('timer-bar');
         
-        barElement.style.width = `${percentage}%`;
+        barElement.style.width = `${Math.min(100, percentage)}%`;
         
-        // [수정] 타이머 텍스트 쪽에 현재 플레이 중인 단계(LEVEL)도 직관적으로 표시
-        document.getElementById('timer-text').innerText = `LV.${currentLevel} | TIME: ${timeLeft.toFixed(1)}s`;
+        // 상단 UI 배너에 레벨(LV) 표기
+        let lvText = `LV.${currentLevel}`;
+        if (currentLevel === 5) lvText = "BONUS";
+        document.getElementById('timer-text').innerText = `${lvText} | TIME: ${timeLeft.toFixed(1)}s`;
         
         if (timeLeft <= 10.0) {
             barElement.classList.add('timer-urgent');
@@ -465,11 +526,14 @@
         moleElement.className = `mole ${currentMoleType}`;
         holeElement.classList.add('active');
 
-        // [수정] 고정 속도가 아니라 현재 레벨에 맞춰 변하는 currentSpeed를 타임아웃에 적용
         moleTimeout = setTimeout(popMoleLoop, currentSpeed);
     }
 
+    // 🎯 [핵심 수정] 레벨별 점수 업/다운 연산 기믹 정밀 제어
     function clickMole(index) {
+        const event = window.event || arguments.callee.caller.arguments[0];
+        if (event) event.stopPropagation(); 
+
         const holeElement = document.getElementById(`h${index}`);
         if (index !== activeMoleIndex || !holeElement.classList.contains('active')) return;
 
@@ -483,13 +547,33 @@
         effectLayer.classList.remove('animate-correct', 'animate-wrong');
         void effectLayer.offsetWidth; 
 
+        let calculatedPlus = 0;
+        let calculatedMinus = 0;
+
+        // 1. 레벨별 동적 배점 할당 시스템 계산
+        if (currentLevel === 1) {
+            calculatedPlus = 10;
+            calculatedMinus = 5;
+        } else if (currentLevel === 2) {
+            calculatedPlus = 15;
+            calculatedMinus = 10;
+        } else if (currentLevel === 3) {
+            calculatedPlus = 20;
+            calculatedMinus = 20; // 맞추면 +20, 틀려도 -20 (동일 대칭)
+        } else if (currentLevel === 4) {
+            calculatedPlus = 40;
+            calculatedMinus = 25;
+        } else if (currentLevel === 5) {
+            calculatedPlus = 50;
+            calculatedMinus = 0; // 400점 이상 보너스 모드: 감점 패널티 완전 없음
+        }
+
+        // 2. 점수 적용 및 폰 피드백 연출
         if (currentMoleType === 'correct') {
-            // [수정] 속도가 빨라질수록(currentSpeed가 작아질수록) 기본점수 외에 보너스 점수가 더 커지도록 보정
-            const calculatedScore = Math.round(10 + (1000 - currentSpeed) / 20);
-            score += calculatedScore;
+            score += calculatedPlus;
             
             effectSymbol.innerText = "O";
-            effectScore.innerText = `+${calculatedScore}`;
+            effectScore.innerText = `+${calculatedPlus}`;
             effectLayer.classList.add('animate-correct');
             
             if (isSoundEnabled) {
@@ -497,21 +581,49 @@
                 audioSuccess.play().catch(e => {});
             }
         } else {
-            score = Math.max(0, score - 15);
+            score = Math.max(0, score - calculatedMinus);
             
             effectSymbol.innerText = "X";
-            effectScore.innerText = "-15";
+            effectScore.innerText = calculatedMinus === 0 ? "MISS" : `-${calculatedMinus}`;
             effectLayer.classList.add('animate-wrong');
             
             if (isSoundEnabled) {
                 audioFail.currentTime = 0;
                 audioFail.play().catch(e => {});
+                setTimeout(() => { audioFail.pause(); audioFail.currentTime = 0; }, 250); 
             }
         }
 
         scoreNumElement.innerText = score;
+        
+        // 연산이 일어난 직후 레벨 변동 여부 갱신 체크
+        checkLevelSystem(); 
+
         scoreNumElement.classList.add('score-bounce');
         setTimeout(() => { scoreNumElement.classList.remove('score-bounce'); }, 200);
+    }
+
+    // 🎯 [핵심 수정] 격자판 오 클릭(빈칸 터치) 시 전 구간 동일하게 -1점 패널티 처리
+    function clickEmptyBoard() {
+        if (timeLeft <= 0 || document.getElementById('screen-game').classList.contains('active') === false) return;
+
+        score = Math.max(0, score - 1); // 빈 칸 터치 시 -1점
+
+        const scoreNumElement = document.getElementById('score-num');
+        scoreNumElement.innerText = score;
+
+        // 감점을 알려주는 빨간 점수 라이팅 피드백
+        scoreNumElement.style.color = "#ef4444";
+        setTimeout(() => { scoreNumElement.style.color = ""; }, 150);
+
+        // 실시간 레벨 체크 (감점으로 하위 레벨 롤백 가능 지원)
+        checkLevelSystem();
+
+        if (isSoundEnabled) {
+            audioFail.currentTime = 0;
+            audioFail.play().catch(e => {});
+            setTimeout(() => { audioFail.pause(); audioFail.currentTime = 0; }, 120);
+        }
     }
 
     function endGame() {
@@ -619,6 +731,15 @@
             submitBtn.innerText = "RANKING REGISTRY";
             submitBtn.style.background = "#2563eb";
         });
+    }
+
+    function resetToMainMenu() {
+        clearInterval(gameInterval);
+        clearTimeout(moleTimeout);
+        audioBGM.pause();
+        audioBGM.currentTime = 0;
+        document.getElementById('global-header').style.display = 'flex';
+        location.reload();
     }
 </script>
 </body>
