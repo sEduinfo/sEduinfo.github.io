@@ -8,26 +8,22 @@
     <style>
         /* 기본 네온 & 우주 스타일 리셋 */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
-        
         body { 
             font-family: 'Gamja Flower', 'Malgun Gothic', sans-serif; 
             background: #030712; 
             display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; 
         }
-
+        
         #container { 
             width: 100%; max-width: 450px; height: 100%; 
-            background: rgba(11, 15, 30, 0.95); /* 반투명도를 조금 더 올려서 게임판 집중도 향상 */
-            
-            /* 원래 body에 있던 우주 배경 및 애니메이션을 이쪽으로 이동 */
+            background: rgba(11, 15, 30, 0.95); 
             background-image: 
                 radial-gradient(white, rgba(255,255,255,.3) 2px, transparent 30px),
                 radial-gradient(white, rgba(255,255,255,.2) 1.5px, transparent 20px),
                 radial-gradient(white, rgba(255,255,255,.15) 2px, transparent 25px);
-            background-size: 350px 350px, 250px 250px, 150px 150px; /* 모바일 크기에 맞춰 별 밀도 최적화 */
+            background-size: 350px 350px, 250px 250px, 150px 150px; 
             background-position: 0 0, 30px 40px, 70px 120px;
-            animation: starMovement 60s linear infinite; /* 움직임 속도도 모바일에 맞게 살짝 상향 */
-            
+            animation: starMovement 60s linear infinite; 
             backdrop-filter: blur(10px);
             display: flex; flex-direction: column; position: relative; 
             border-left: 1px solid rgba(59, 130, 246, 0.3);
@@ -40,7 +36,7 @@
             to { background-position: 350px 350px, 280px 290px, 220px 420px; }
         }
         
-        /* 화면 전환 딥페이드인 애니메이션 */
+        /* 화면 전환 애니메이션 */
         .screen { 
             display: none; width: 100%; height: 100%; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -64,6 +60,7 @@
             font-size: 20px; font-weight: bold; border-radius: 30px; cursor: pointer; 
             width: 85%; max-width: 300px; box-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
             transition: all 0.2s ease; animation: pulseGlow 2s infinite;
+            margin-bottom: 12px;
         }
         .btn:active { transform: scale(0.95); box-shadow: 0 0 5px rgba(37, 99, 235, 0.9); }
         @keyframes pulseGlow {
@@ -72,43 +69,70 @@
             100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
         }
 
-        .intro-img { font-size: 70px; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+        /* 규칙 버튼 보조 디자인 */
+        .btn-secondary {
+            background: rgba(31, 41, 55, 0.6) !important;
+            border: 1px solid rgba(156, 163, 175, 0.4) !important;
+            box-shadow: none !important;
+            animation: none !important;
+            font-size: 17px;
+            padding: 12px 25px;
+        }
+
+        .intro-img { font-size: 70px; margin-bottom: 5px; animation: float 3s ease-in-out infinite; }
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-12px); }
             100% { transform: translateY(0px); }
         }
 
-        .global-header { 
-            width: auto;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 500; 
-        }
-        
-        /* [CSS 수정] 중학생들이 한눈에 알아보고 누를 수 있는 네온 뱃지 스타일 */
+        /* 사운드 토글 네온 뱃지 스타일 */
+        .global-header { width: auto; display: flex; justify-content: center; align-items: center; z-index: 500; }
         .sound-toggle-btn { 
             font-family: 'Gamja Flower', sans-serif;
-            background: rgba(239, 68, 68, 0.25); /* 기본 음소거 상태는 붉은빛 */
-            border: 2px solid #ef4444; 
-            border-radius: 20px; 
-            padding: 4px 12px;
-            font-size: 14px; 
-            font-weight: bold;
-            cursor: pointer; 
-            color: white;
-            display: flex; justify-content: center; align-items: center; gap: 5px;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-            transition: all 0.2s;
+            background: rgba(239, 68, 68, 0.25); border: 2px solid #ef4444; 
+            border-radius: 20px; padding: 8px 18px; font-size: 16px; font-weight: bold;
+            cursor: pointer; color: white; display: flex; justify-content: center; align-items: center; gap: 5px;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); transition: all 0.2s;
         }
-        /* 사운드가 켜졌을 때: 에메랄드 녹색 네온으로 변경 */
         .sound-toggle-btn.muted { background: rgba(239, 68, 68, 0.25); border-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-        /* 자바스크립트에서 .muted 클래스를 떼어낼 때 적용될 활성화 스타일 */
-        .sound-toggle-btn:not(.muted) { 
-            background: rgba(16, 185, 129, 0.3); 
-            border-color: #10b981; 
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); 
+        .sound-toggle-btn:not(.muted) { background: rgba(16, 185, 129, 0.3); border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+
+        /* --- 🆕 규칙 모달 팝업 레이아웃 --- */
+        .modal-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.9); z-index: 1000; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: #111827; border: 2px solid #3b82f6; border-radius: 20px;
+            width: 100%; max-width: 380px; padding: 22px; color: #e5e7eb; text-align: left;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-title { font-family: 'Orbitron', sans-serif; font-size: 22px; color: #60a5fa; margin-bottom: 15px; border-bottom: 1px solid #1f2937; padding-bottom: 8px; text-align: center; }
+        .modal-scroll { max-height: 330px; overflow-y: auto; font-size: 15px; line-height: 1.7; padding-right: 4px; }
+        .rule-sec { margin-bottom: 12px; }
+        .rule-bold { color: #f59e0b; font-weight: bold; }
+        .rule-green { color: #10b981; font-weight: bold; }
+        .rule-red { color: #ef4444; font-weight: bold; }
+
+        /* --- 🆕 카운트다운 오버레이 레이아웃 --- */
+        #countdown-screen {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.85); z-index: 900; justify-content: center; align-items: center;
+        }
+        #countdown-number {
+            font-family: 'Orbitron', sans-serif; font-size: 90px; font-weight: 900;
+            color: #ffffff; text-shadow: 0 0 20px #2563eb, 0 0 40px #3b82f6;
+            animation: countZoom 1s ease-in-out infinite;
+        }
+        @keyframes countZoom {
+            0% { transform: scale(0.4); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
         }
 
         /* --- 게임화면 HUD 레이아웃 --- */
@@ -124,12 +148,11 @@
         .score-bounce { animation: bounce 0.2s ease-out; }
         @keyframes bounce { 0% { transform: scale(1); } 50% { transform: scale(1.3); color: #22c55e; } 100% { transform: scale(1); } }
 
-        /* 3x3 격자 우주 캡슐 기믹 디자인 */
+        /* 3x3 격자 디자인 */
         .game-board-wrapper { position: relative; width: 90vw; height: 90vw; max-width: 380px; max-height: 380px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; width: 100%; height: 100%; }
         .hole { background: rgba(17, 24, 39, 0.8); border-radius: 18px; position: relative; overflow: hidden; border: 2px solid #1f2937; box-shadow: inset 0 0 15px rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; }
         
-        /* 두더지 등장 컴포넌트 */
         .mole { 
             position: absolute; width: 90%; height: 90%; 
             background: linear-gradient(135deg, #1f2937, #111827); 
@@ -140,12 +163,9 @@
             cursor: pointer; text-align: center; word-break: keep-all; 
         }
         .hole.active .mole { transform: translateY(0); }
-        /* 정답 타겟인 경우: 에메랄드 네온 광채 */
         .hole.active .mole.correct { border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); color: #a7f3d0; }
-        /* 오답 타겟인 경우: 핫핑크 네온 광채 */
         .hole.active .mole.wrong { border-color: #f43f5e; box-shadow: 0 0 15px rgba(244, 63, 94, 0.5); color: #fecdd3; }
 
-        /* 3x3 전체를 가로지르는 고속 도약 이펙트 */
         .full-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; z-index: 100; opacity: 0; }
         .full-effect .symbol { font-family: 'Orbitron', sans-serif; font-size: 180px; font-weight: 900; line-height: 1; }
         .full-effect .score-txt { font-family: 'Orbitron', sans-serif; font-size: 50px; font-weight: bold; margin-top: -15px; }
@@ -164,23 +184,18 @@
             100% { opacity: 0; transform: scale(1.35); color: rgba(244, 63, 94, 0); }
         }
 
-        /* --- 결과창 및 수집 폼 고도화 --- */
+        /* 결과창 및 수집 폼 */
         .result-box { background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(59, 130, 246, 0.2); padding: 18px; border-radius: 20px; width: 95%; margin-bottom: 15px; }
         .final-score { font-family: 'Orbitron', sans-serif; font-size: 40px; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); font-weight: 900; margin-top: 5px; }
         
         .school-info-title { font-size: 15px; font-weight: bold; color: #34d399; margin: 15px 0 10px 0; text-align: left; padding-left: 5px; text-shadow: 0 0 8px rgba(52, 211, 153, 0.3); }
         .info-badge-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 110px; overflow-y: auto; padding: 8px; background: rgba(17, 24, 39, 0.6); border-radius: 12px; border: 1px solid rgba(156,163,175,0.2); }
         .info-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: fadeInUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; opacity: 0; }
-        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
-
+        
         #result-form-area { width: 95%; max-height: 180px; overflow-y: auto; padding-right: 6px; margin-bottom: 12px; }
         .form-group { width: 100%; text-align: left; margin-bottom: 10px; }
         .form-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #9ca3af; }
-        .form-group input { 
-            width: 100%; padding: 12px; background: rgba(17, 24, 39, 0.8); 
-            border: 1px solid #374151; color: white; border-radius: 10px; font-size: 15px; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s;
-        }
+        .form-group input { width: 100%; padding: 12px; background: rgba(17, 24, 39, 0.8); border: 1px solid #374151; color: white; border-radius: 10px; font-size: 15px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s; }
         .form-group input:focus { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); outline: none; }
         
         .row-group { display: flex; gap: 10px; width: 100%; }
@@ -188,38 +203,52 @@
         .agree-box input { margin-right: 8px; width: 18px; height: 18px; cursor: pointer; }
 
         .welcome-back-msg { background: rgba(37, 99, 235, 0.15); border: 1px dashed #3b82f6; color: #60a5fa; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; width: 100%; text-align: center; display: none; }
-
-        #reset-game-btn {
-            display: inline-block;
-            margin-top: 15px;
-            color: #9ca3af; 
-            font-size: 15px; 
-            text-decoration: underline; 
-            cursor: pointer;
-            transition: color 0.2s;
-        }
         
-        /* 커스텀 스크롤바 세팅 (폼, 뱃지 영역용) */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.5); }
     </style>
 </head>
 <body>
 
 <div id="container">
 
+    <div id="countdown-screen">
+        <div id="countdown-number">5</div>
+    </div>
+
+    <div id="rules-modal" class="modal-overlay" onclick="closeRules()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-title">MISSION RULES</div>
+            <div class="modal-scroll">
+                <div class="rule-sec">🚀 <span class="rule-bold">탐사 목적:</span> 30초 동안 행성에 출현하는 성일정보고의 대박 장점 문구들을 터치해 파괴하세요!</div>
+                <div class="rule-sec">📈 <span class="rule-bold">실력 기반 레벨 시스템:</span></div>
+                <div style="padding-left:10px; margin-bottom:8px; font-size: 14.5px;">
+                    • <span class="rule-bold">LV.1 (0점~):</span> 성공 <span class="rule-green">+10</span> / 실패 <span class="rule-red">-5</span> (기본 속도)<br>
+                    • <span class="rule-bold">LV.2 (100점~):</span> 성공 <span class="rule-green">+15</span> / 실패 <span class="rule-red">-10</span> (약간 가속)<br>
+                    • <span class="rule-bold">LV.3 (200점~):</span> 성공 <span class="rule-green">+20</span> / 실패 <span class="rule-red">-20</span> (중속 질주)<br>
+                    • <span class="rule-bold">LV.4 (300점~):</span> 성공 <span class="rule-green">+40</span> / 실패 <span class="rule-red">-25</span> (고속 탐사)<br>
+                    • <span class="rule-bold">BONUS (400점~):</span> 성공 <span class="rule-green">+50</span> / 실패 <span class="rule-green">0</span> (감점 없는 폭주 모드)
+                </div>
+                <div class="rule-sec">⏱️ <span class="rule-green">타임 익스텐션 기믹:</span> 100점, 200점, 300점 등 <span class="rule-bold">100점 단위를 최초 돌파할 때마다 제한 시간이 5초씩 실시간 수급</span>됩니다!</div>
+                <div class="rule-sec">⚠️ <span class="rule-red">오클릭 패널티:</span> 빈 구멍이나 허공을 헛손질 타격하면 전 구간 공통 <span class="rule-red">-1점</span>이 감점되며, 점수가 깎이면 레벨과 속도가 다시 이전 단계로 다운(Rollback)될 수 있습니다.</div>
+            </div>
+            <button class="btn btn-secondary" style="width:100%; margin-top:15px; margin-bottom:0;" onclick="closeRules()">확인 완료</button>
+        </div>
+    </div>
+
     <div id="screen-start" class="screen active">
         <div class="intro-img">🚀</div>
-
-        <div class="global-header" id="global-header">
-            <button id="sound-btn" class="sound-toggle-btn muted" onclick="toggleSound()">🔇</button>
+        
+        <div class="global-header" id="global-header" style="position: relative; margin-top: -10px; margin-bottom: 25px; padding: 0;">
+            <button id="sound-btn" class="sound-toggle-btn muted" onclick="toggleSound()">🔇 사운드 켜기</button>
         </div>
 
         <h1>SUNGIL<br>SPACE CLICKER</h1>
-        <p>은하계 탐사 대작전!<br><strong>30초 동안 성일정보고의 대박 장점 행성들만</strong><br>광속으로 터치해 파괴하세요!<br><br><span style="color:#f43f5e; font-weight: bold;">⚠️ 블랙홀 함정 카드는 감점 처리됩니다!</span></p>
-        <button class="btn" onclick="startGame()">START MISSION</button>
+        <p>은하계 탐사 대작전! 30초 동안<br><strong>성일정보고의 대박 장점 행성들만</strong><br>광속으로 터치해 파괴하세요!</p>
+        
+        <button class="btn" onclick="startCountdown()">START MISSION</button>
+        <button class="btn btn-secondary" onclick="openRules()">게임 규칙 보기</button>
     </div>
 
     <div id="screen-game" class="screen">
@@ -300,13 +329,13 @@
         </div>
 
         <button class="btn" id="submit-btn" onclick="submitRanking()">RANKING REGISTRY</button>
-        <a href="#" id="reset-game-btn" onclick="resetToMainMenu(); return false;">등록 없이 처음 화면으로 돌아가기</a>
+        
+        <a href="#" onclick="resetToMainMenu(); return false;" style="display: inline-block; margin-top: 15px; color: #9ca3af; font-size: 15px; text-decoration: underline; cursor: pointer;">등록 없이 처음 화면으로 돌아가기</a>
     </div>
 
 </div>
 
 <script>
-    // ★ 구글 배포 시 생성된 본인만의 GAS 웹 앱 URL 주소를 입력하세요!
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyaFkeO8wBPnCwqp81-xz6BiWn__8lYwBNz4OlSvq7ISxgUiJky1gpm4yXXJTEXIP8b6g/exec";
 
     const moleData = {
@@ -330,13 +359,11 @@
     let currentMoleType = null; 
     let isSubmitting = false;
     
-    // 단계 및 사운드 제어 시스템
     let currentLevel = 1; 
     let currentSpeed = 1000; 
     let isSoundEnabled = false;
-    let hasTimeBonusTriggered = false; // 250점 5초 보너스가 중복 적용되는 것 방지용 플래그
+    let lastTriggeredMilestone = 0;
 
-    // 사운드 파일 에셋 로드 세팅
     const audioBGM = new Audio('bgm.mp3');
     audioBGM.loop = true;
     audioBGM.volume = 0.5;
@@ -352,19 +379,58 @@
 
     [audioBGM, audioSuccess, audioFail].forEach(audio => { audio.load(); });
 
+    // 🆕 규칙 팝업 모달 제어용 활성화 함수
+    function openRules() { document.getElementById('rules-modal').classList.add('active'); }
+    function closeRules() { document.getElementById('rules-modal').classList.remove('active'); }
+
+    // 🆕 [추가] 5 4 3 2 1 START 제어 카운트다운 함수
+    function startCountdown() {
+        // 모바일 사운드 활성 잠금 해제 인터페이스 우회 트리거
+        if (isSoundEnabled) {
+            audioSuccess.play().then(() => { audioSuccess.pause(); audioSuccess.currentTime = 0; });
+        }
+
+        const countScreen = document.getElementById('countdown-screen');
+        const countNumber = document.getElementById('countdown-number');
+        countScreen.style.display = 'flex';
+        
+        let count = 3;
+        countNumber.innerText = count;
+
+        let countdownInterval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countNumber.innerText = count;
+                // 카운트가 바뀔 때 짧게 오답음을 메트로놈처럼 넣어 신호 효과를 줄 수도 있습니다.
+                if (isSoundEnabled) { audioFail.play().then(() => { audioFail.pause(); }); }
+            } else if (count === 0) {
+                countNumber.innerText = "START!";
+                countNumber.style.color = "#10b981"; // 초록빛으로 번쩍
+                countNumber.style.textShadow = "0 0 20px #10b981, 0 0 40px #059669";
+                if (isSoundEnabled) { audioSuccess.play().catch(e=>{}); }
+            } else {
+                clearInterval(countdownInterval);
+                countScreen.style.display = 'none';
+                countNumber.style.color = ""; // 스타일 원복
+                countNumber.style.textShadow = "";
+                startGame(); // 실질적인 인게임 타이머 및 배치 가동
+            }
+        }, 1000);
+    }
+
     function toggleSound() {
         const soundBtn = document.getElementById('sound-btn');
         isSoundEnabled = !isSoundEnabled;
 
         if (isSoundEnabled) {
-            soundBtn.innerText = "🔊";
+            soundBtn.innerText = "🔊 사운드 끄기";
             soundBtn.classList.remove('muted');
             
             audioSuccess.play().then(() => { audioSuccess.pause(); audioSuccess.currentTime = 0; });
             audioFail.play().then(() => { audioFail.pause(); audioFail.currentTime = 0; });
             audioBGM.play().then(() => { audioBGM.pause(); audioBGM.currentTime = 0; });
         } else {
-            soundBtn.innerText = "🔇";
+            soundBtn.innerText = "🔇 사운드 켜기";
             soundBtn.classList.add('muted');
             audioBGM.pause();
         }
@@ -375,14 +441,14 @@
         document.getElementById(screenId).classList.add('active');
     }
 
-    // 게임 시작 시 초기화
+    // 카운트다운 완료 후 호출되는 함수
     function startGame() {
         score = 0;
         timeLeft = 30.0;
         currentLevel = 1;   
         currentSpeed = 1000; 
         isSubmitting = false;
-        hasTimeBonusTriggered = false; // 보너스 플래그 초기화
+        lastTriggeredMilestone = 0;
         
         document.getElementById('score-num').innerText = score;
         updateTimerUI();
@@ -410,49 +476,50 @@
         popMoleLoop();
     }
 
-    // 🎯 [핵심 수정] 기획안에 맞춘 실시간 점수 기반 단계 및 속도 제어 함수
     function checkLevelSystem() {
-        // [250점 기믹] 250점 돌파 시 5초 추가 연출 (딱 한 번만 실행되도록 플래그 처리)
-        if (score >= 250 && !hasTimeBonusTriggered) {
-            hasTimeBonusTriggered = true;
-            timeLeft += 5.0; // 5초 추가
-            triggerSpeedUpEffect("TIME BONUS", "+5 SECONDS!");
+        // [100점당 5초 보너스 엔진] 최초 돌파 시 5초 추가
+        let currentMilestone = Math.floor(score / 100) * 100;
+        if (currentMilestone > 0 && currentMilestone > lastTriggeredMilestone) {
+            lastTriggeredMilestone = currentMilestone; 
+            timeLeft += 5.0; 
+            triggerSpeedUpEffect(`${currentMilestone} POINTS`, "TIME BONUS +5s!");
         }
 
-        // 1단계: 0점 ~ 99점 구간 (속도 1000ms)
+        // --- 레벨별 속도 장벽 완화 밸런싱 세팅 ($1000ms = 1$초) ---
+        // 1단계: 0점 ~ 99점 구간 (동일: 1초)
         if (score < 100) {
             currentLevel = 1;
             currentSpeed = 1000;
         }
-        // 2단계: 100점 ~ 199점 구간 (속도 700ms)
+        // 2단계: 100점 ~ 199점 구간 (기존 700ms ➡️ 750ms로 살짝 느슨하게)
         else if (score >= 100 && score < 200) {
             if (currentLevel !== 2) {
                 currentLevel = 2;
-                currentSpeed = 700;
+                currentSpeed = 750; 
                 triggerSpeedUpEffect("LEVEL 2", "SPEED UP!");
             }
         } 
-        // 3단계: 200점 ~ 299점 구간 (속도 550ms)
+        // 3단계: 200점 ~ 299점 구간 (기존 550ms ➡️ 620ms로 호흡 밸런스 조정)
         else if (score >= 200 && score < 300) {
             if (currentLevel !== 3) {
                 currentLevel = 3;
-                currentSpeed = 550;
+                currentSpeed = 620; 
                 triggerSpeedUpEffect("LEVEL 3", "SPEED UP!");
             }
         }
-        // 4단계: 300점 ~ 399점 구간 (속도 420ms)
+        // 4단계: 300점 ~ 399점 구간 (기존 420ms ➡️ 500ms로 눈으로 쫓아갈 수 있게 조정)
         else if (score >= 300 && score < 400) {
             if (currentLevel !== 4) {
                 currentLevel = 4;
-                currentSpeed = 420;
+                currentSpeed = 500; 
                 triggerSpeedUpEffect("LEVEL 4", "SPEED UP!");
             }
         }
-        // 5단계: 400점 이상 최종 보너스 스퍼트 모드 (속도 330ms)
+        // 5단계(BONUS): 400점 이상 피버 구간 (기존 330ms ➡️ 380ms로 폭주 난타 최적화)
         else if (score >= 400) {
             if (currentLevel !== 5) {
                 currentLevel = 5;
-                currentSpeed = 330;
+                currentSpeed = 380; 
                 triggerSpeedUpEffect("BONUS MODE", "GOD SPEED!!!");
             }
         }
@@ -489,12 +556,11 @@
     }
 
     function updateTimerUI() {
-        const percentage = (timeLeft / 35) * 100; // 5초 추가 대응을 고려한 비율 계산
+        const percentage = (timeLeft / 35) * 100; 
         const barElement = document.getElementById('timer-bar');
         
         barElement.style.width = `${Math.min(100, percentage)}%`;
         
-        // 상단 UI 배너에 레벨(LV) 표기
         let lvText = `LV.${currentLevel}`;
         if (currentLevel === 5) lvText = "BONUS";
         document.getElementById('timer-text').innerText = `${lvText} | TIME: ${timeLeft.toFixed(1)}s`;
@@ -529,7 +595,6 @@
         moleTimeout = setTimeout(popMoleLoop, currentSpeed);
     }
 
-    // 🎯 [핵심 수정] 레벨별 점수 업/다운 연산 기믹 정밀 제어
     function clickMole(index) {
         const event = window.event || arguments.callee.caller.arguments[0];
         if (event) event.stopPropagation(); 
@@ -550,7 +615,6 @@
         let calculatedPlus = 0;
         let calculatedMinus = 0;
 
-        // 1. 레벨별 동적 배점 할당 시스템 계산
         if (currentLevel === 1) {
             calculatedPlus = 10;
             calculatedMinus = 5;
@@ -559,19 +623,17 @@
             calculatedMinus = 10;
         } else if (currentLevel === 3) {
             calculatedPlus = 20;
-            calculatedMinus = 20; // 맞추면 +20, 틀려도 -20 (동일 대칭)
+            calculatedMinus = 20; 
         } else if (currentLevel === 4) {
             calculatedPlus = 40;
             calculatedMinus = 25;
         } else if (currentLevel === 5) {
             calculatedPlus = 50;
-            calculatedMinus = 0; // 400점 이상 보너스 모드: 감점 패널티 완전 없음
+            calculatedMinus = 0; 
         }
 
-        // 2. 점수 적용 및 폰 피드백 연출
         if (currentMoleType === 'correct') {
             score += calculatedPlus;
-            
             effectSymbol.innerText = "O";
             effectScore.innerText = `+${calculatedPlus}`;
             effectLayer.classList.add('animate-correct');
@@ -582,7 +644,6 @@
             }
         } else {
             score = Math.max(0, score - calculatedMinus);
-            
             effectSymbol.innerText = "X";
             effectScore.innerText = calculatedMinus === 0 ? "MISS" : `-${calculatedMinus}`;
             effectLayer.classList.add('animate-wrong');
@@ -595,41 +656,34 @@
         }
 
         scoreNumElement.innerText = score;
-        
-        // 연산이 일어난 직후 레벨 변동 여부 갱신 체크
         checkLevelSystem(); 
 
         scoreNumElement.classList.add('score-bounce');
         setTimeout(() => { scoreNumElement.classList.remove('score-bounce'); }, 200);
     }
 
-    // 🎯 [핵심 수정] 격자판 오 클릭(빈칸 터치) 시 전 구간 동일하게 -1점 패널티 처리
     function clickEmptyBoard() {
         if (timeLeft <= 0 || document.getElementById('screen-game').classList.contains('active') === false) return;
 
-        score = Math.max(0, score - 1); // 빈 칸 터치 시 -1점
-
+        score = Math.max(0, score - 1); 
         const scoreNumElement = document.getElementById('score-num');
         scoreNumElement.innerText = score;
 
-        // 감점을 알려주는 빨간 점수 라이팅 피드백
         scoreNumElement.style.color = "#ef4444";
         setTimeout(() => { scoreNumElement.style.color = ""; }, 150);
 
-        // 실시간 레벨 체크 (감점으로 하위 레벨 롤백 가능 지원)
         checkLevelSystem();
 
         if (isSoundEnabled) {
             audioFail.currentTime = 0;
             audioFail.play().catch(e => {});
-            setTimeout(() => { audioFail.pause(); audioFail.currentTime = 0; }, 120);
+            setTimeout(() => { audioFail.pause(); audioFail.currentTime = 0; }, 120); 
         }
     }
 
     function endGame() {
         clearInterval(gameInterval);
         clearTimeout(moleTimeout);
-        
         audioBGM.pause(); 
 
         if (activeMoleIndex !== -1) {
