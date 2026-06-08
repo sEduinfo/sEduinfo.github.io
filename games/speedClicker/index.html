@@ -3,107 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성일 Speed Clicker</title>
+    <title>Sungil Space Clicker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        /* 기본 스타일 및 리셋 */
+        /* 기본 네온 & 우주 스타일 리셋 */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
-        body { font-family: 'Malgun Gothic', sans-serif; background: #f0f3f8; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
-        #container { width: 100%; max-width: 450px; height: 100%; background: #ffffff; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        
-        /* 공통 화면 스타일 */
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
-        .screen.active { display: flex; }
-
-        h1 { color: #1e3a8a; margin-bottom: 10px; font-size: 28px; }
-        p { color: #4b5563; margin-bottom: 20px; font-size: 16px; line-height: 1.5; }
-        
-        /* 버튼 스타일 */
-        .btn { background: #2563eb; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 80%; max-width: 300px; transition: background 0.2s; }
-        .btn:active { background: #1d4ed8; }
-
-        .intro-img { font-size: 60px; margin-bottom: 20px; }
-
-        /* [요청 반영] 상단 고정 헤더 영역 (소리 아이콘 전용) */
-        .global-header { 
-            position: absolute; top: 0; left: 0; width: 100%; 
-            display: flex; justify-content: flex-end; padding: 15px 20px; z-index: 500; 
+        body { 
+            font-family: 'Gamja Flower', 'Malgun Gothic', sans-serif; 
+            background: #030712; 
+            display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; 
         }
+
+        #container { 
+            width: 100%; max-width: 450px; height: 100%; 
+            background: rgba(11, 15, 30, 0.95); /* 반투명도를 조금 더 올려서 게임판 집중도 향상 */
+            
+            /* 원래 body에 있던 우주 배경 및 애니메이션을 이쪽으로 이동 */
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.3) 2px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.2) 1.5px, transparent 20px),
+                radial-gradient(white, rgba(255,255,255,.15) 2px, transparent 25px);
+            background-size: 350px 350px, 250px 250px, 150px 150px; /* 모바일 크기에 맞춰 별 밀도 최적화 */
+            background-position: 0 0, 30px 40px, 70px 120px;
+            animation: starMovement 60s linear infinite; /* 움직임 속도도 모바일에 맞게 살짝 상향 */
+            
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; position: relative; 
+            border-left: 1px solid rgba(59, 130, 246, 0.3);
+            border-right: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); 
+        }
+
+        @keyframes starMovement {
+            from { background-position: 0 0, 30px 40px, 70px 120px; }
+            to { background-position: 350px 350px, 280px 290px, 220px 420px; }
+        }
+        
+        /* 화면 전환 딥페이드인 애니메이션 */
+        .screen { 
+            display: none; width: 100%; height: 100%; 
+            flex-direction: column; justify-content: center; align-items: center; 
+            padding: 25px; text-align: center; 
+            opacity: 0; transform: scale(0.96); transition: all 0.4s ease-out;
+        }
+        .screen.active { display: flex; opacity: 1; transform: scale(1); }
+
+        h1 { 
+            font-family: 'Orbitron', sans-serif; font-weight: 900;
+            color: #fff; text-shadow: 0 0 10px #2563eb, 0 0 20px #3b82f6;
+            margin-bottom: 15px; font-size: 32px; letter-spacing: 1px;
+        }
+        p { color: #9ca3af; margin-bottom: 25px; font-size: 18px; line-height: 1.6; }
+        
+        /* 사이버 펑크 네온 버튼 */
+        .btn { 
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #1e40af, #2563eb); 
+            color: white; border: 2px solid #60a5fa; padding: 15px 30px; 
+            font-size: 20px; font-weight: bold; border-radius: 30px; cursor: pointer; 
+            width: 85%; max-width: 300px; box-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
+            transition: all 0.2s ease; animation: pulseGlow 2s infinite;
+        }
+        .btn:active { transform: scale(0.95); box-shadow: 0 0 5px rgba(37, 99, 235, 0.9); }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(96, 165, 250, 0.8); border-color: #93c5fd; }
+            100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+        }
+
+        .intro-img { font-size: 70px; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* 글로벌 상단 헤더 영역 (소리 아이콘) */
+        .global-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: flex-end; padding: 15px 20px; z-index: 500; }
         .sound-toggle-btn { 
-            background: #e5e7eb; border: 2px solid #cbd5e1; border-radius: 50%; 
+            background: rgba(31, 41, 55, 0.6); border: 1px solid rgba(156, 163, 175, 0.5); border-radius: 50%; 
             width: 44px; height: 44px; font-size: 20px; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.2s;
+            display: flex; justify-content: center; align-items: center; color: white;
+            transition: all 0.2s; box-shadow: 0 0 10px rgba(255,255,255,0.05);
         }
-        .sound-toggle-btn.muted { background: #fee2e2; border-color: #fca5a5; }
+        .sound-toggle-btn.muted { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
 
-        /* 게임 화면 HUD 및 연출 */
-        #game-hud { width: 90vw; max-width: 380px; margin-bottom: 15px; text-align: left; margin-top: 40px; }
-        
-        .timer-container { width: 100%; height: 14px; background: #e5e7eb; border-radius: 7px; overflow: hidden; position: relative; margin-bottom: 5px; border: 1px solid #cbd5e1; }
-        .timer-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #3b82f6); transition: width 0.1s linear, background-color 0.5s; }
-        .timer-urgent { animation: pulse 0.5s infinite alternate; background: #ef4444 !important; }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        .timer-text { font-size: 14px; font-weight: bold; color: #4b5563; text-align: right; margin-top: 2px; }
+        /* --- 게임화면 HUD 레이아웃 --- */
+        #game-hud { width: 90vw; max-width: 380px; margin-bottom: 20px; text-align: left; margin-top: 40px; }
+        .timer-container { width: 100%; height: 16px; background: rgba(31, 41, 55, 0.7); border-radius: 8px; overflow: hidden; position: relative; border: 1px solid rgba(156,163,175,0.3); }
+        .timer-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #06b6d4, #3b82f6); transition: width 0.1s linear; }
+        .timer-urgent { animation: pulseUrgent 0.4s infinite alternate; background: linear-gradient(90deg, #ef4444, #f97316) !important; box-shadow: 0 0 15px #ef4444; }
+        @keyframes pulseUrgent { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        .timer-text { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: bold; color: #9ca3af; text-align: right; margin-top: 5px; }
 
-        .score-container { margin-top: 20px; font-size: 24px; font-weight: bold; color: #1e3a8a; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .score-num { font-size: 32px; color: #2563eb; display: inline-block; transition: transform 0.1s ease; }
+        .score-container { font-family: 'Orbitron', sans-serif; margin-top: 25px; font-size: 26px; font-weight: bold; color: #67e8f9; text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .score-num { font-size: 36px; color: #fff; text-shadow: 0 0 15px #06b6d4; display: inline-block; }
         .score-bounce { animation: bounce 0.2s ease-out; }
-        @keyframes bounce { 0% { transform: scale(1); } 50% { transform: scale(1.4); color: #10b981; } 100% { transform: scale(1); } }
+        @keyframes bounce { 0% { transform: scale(1); } 50% { transform: scale(1.3); color: #22c55e; } 100% { transform: scale(1); } }
 
-        /* 게임 보드 메인 래퍼 */
+        /* 3x3 격자 우주 캡슐 기믹 디자인 */
         .game-board-wrapper { position: relative; width: 90vw; height: 90vw; max-width: 380px; max-height: 380px; }
-
-        /* 3x3 그리드 판 */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; width: 100%; height: 100%; }
-        .hole { background: #e5e7eb; border-radius: 15px; position: relative; overflow: hidden; border: 2px solid #cbd5e1; display: flex; justify-content: center; align-items: center; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; width: 100%; height: 100%; }
+        .hole { background: rgba(17, 24, 39, 0.8); border-radius: 18px; position: relative; overflow: hidden; border: 2px solid #1f2937; box-shadow: inset 0 0 15px rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; }
         
-        /* 두더지 팝업 */
-        .mole { position: absolute; width: 90%; height: 90%; background: #ffffff; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 5px; font-size: 13px; font-weight: bold; border: 3px solid #94a3b8; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(150%); transition: transform 0.1s ease-out; cursor: pointer; text-align: center; word-break: keep-all; }
+        /* 두더지 등장 컴포넌트 */
+        .mole { 
+            position: absolute; width: 90%; height: 90%; 
+            background: linear-gradient(135deg, #1f2937, #111827); 
+            border-radius: 14px; display: flex; justify-content: center; align-items: center; 
+            padding: 8px; font-size: 14px; font-weight: bold; color: #e5e7eb;
+            border: 2px solid #4b5563; box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            transform: translateY(160%); transition: transform 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            cursor: pointer; text-align: center; word-break: keep-all; 
+        }
         .hole.active .mole { transform: translateY(0); }
-        .hole.active .mole.correct { border-color: #10b981; background: #ecfdf5; color: #065f46; }
-        .hole.active .mole.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+        /* 정답 타겟인 경우: 에메랄드 네온 광채 */
+        .hole.active .mole.correct { border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); color: #a7f3d0; }
+        /* 오답 타겟인 경우: 핫핑크 네온 광채 */
+        .hole.active .mole.wrong { border-color: #f43f5e; box-shadow: 0 0 15px rgba(244, 63, 94, 0.5); color: #fecdd3; }
 
-        /* 3x3 판 전용 피드백 이펙트 */
+        /* 3x3 전체를 가로지르는 고속 도약 이펙트 */
         .full-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; z-index: 100; opacity: 0; }
-        .full-effect .symbol { font-size: 160px; font-weight: bold; line-height: 1; }
-        .full-effect .score-txt { font-size: 45px; font-weight: bold; margin-top: -10px; }
+        .full-effect .symbol { font-family: 'Orbitron', sans-serif; font-size: 180px; font-weight: 900; line-height: 1; }
+        .full-effect .score-txt { font-family: 'Orbitron', sans-serif; font-size: 50px; font-weight: bold; margin-top: -15px; }
 
-        .animate-correct { animation: popFadeOutCorrect 0.4s ease-out forwards; }
-        .animate-wrong { animation: popFadeOutWrong 0.4s ease-out forwards; }
+        .animate-correct { animation: popFadeOutCorrect 0.45s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+        .animate-wrong { animation: popFadeOutWrong 0.45s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
 
         @keyframes popFadeOutCorrect {
-            0% { opacity: 0; transform: scale(0.6); color: rgba(16, 185, 129, 0.9); }
-            30% { opacity: 1; transform: scale(1.1); color: rgba(16, 185, 129, 1); }
-            100% { opacity: 0; transform: scale(1.4); color: rgba(16, 185, 129, 0); }
+            0% { opacity: 0; transform: scale(0.5); color: rgba(16, 185, 129, 0.9); text-shadow: 0 0 20px #10b981; }
+            25% { opacity: 1; transform: scale(1.05); color: rgba(255, 255, 255, 1); text-shadow: 0 0 30px #10b981; }
+            100% { opacity: 0; transform: scale(1.35); color: rgba(16, 185, 129, 0); }
         }
         @keyframes popFadeOutWrong {
-            0% { opacity: 0; transform: scale(0.6); color: rgba(239, 44, 44, 0.9); }
-            30% { opacity: 1; transform: scale(1.1); color: rgba(239, 44, 44, 1); }
-            100% { opacity: 0; transform: scale(1.4); color: rgba(239, 44, 44, 0); }
+            0% { opacity: 0; transform: scale(0.5); color: rgba(244, 63, 94, 0.9); text-shadow: 0 0 20px #f43f5e; }
+            25% { opacity: 1; transform: scale(1.05); color: rgba(255, 255, 255, 1); text-shadow: 0 0 30px #f43f5e; }
+            100% { opacity: 0; transform: scale(1.35); color: rgba(244, 63, 94, 0); }
         }
 
-        /* 결과 및 등록 화면 */
-        .result-box { background: #f3f4f6; padding: 15px; border-radius: 15px; width: 95%; margin-bottom: 12px; }
-        .final-score { font-size: 32px; color: #2563eb; font-weight: bold; margin-top: 5px; }
+        /* --- 결과창 및 수집 폼 고도화 --- */
+        .result-box { background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(59, 130, 246, 0.2); padding: 18px; border-radius: 20px; width: 95%; margin-bottom: 15px; }
+        .final-score { font-family: 'Orbitron', sans-serif; font-size: 40px; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); font-weight: 900; margin-top: 5px; }
         
-        .school-info-title { font-size: 14px; font-weight: bold; color: #10b981; margin: 12px 0 8px 0; text-align: left; padding-left: 5px; }
-        .info-badge-container { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-height: 110px; overflow-y: auto; padding: 5px; background: #ffffff; border-radius: 10px; border: 1px solid #e5e7eb; }
-        .info-badge { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 6px 10px; font-size: 12px; font-weight: bold; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); animation: fadeInUp 0.5s ease forwards; opacity: 0; }
-        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        .school-info-title { font-size: 15px; font-weight: bold; color: #34d399; margin: 15px 0 10px 0; text-align: left; padding-left: 5px; text-shadow: 0 0 8px rgba(52, 211, 153, 0.3); }
+        .info-badge-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 110px; overflow-y: auto; padding: 8px; background: rgba(17, 24, 39, 0.6); border-radius: 12px; border: 1px solid rgba(156,163,175,0.2); }
+        .info-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: fadeInUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; opacity: 0; }
+        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
 
-        /* 결과 입력 폼 박스 세팅 */
-        #result-form-area { width: 95%; max-height: 180px; overflow-y: auto; padding-right: 4px; margin-bottom: 10px; }
-        .form-group { width: 100%; text-align: left; margin-bottom: 8px; }
-        .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #374151; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; -webkit-appearance: none; }
-        .form-group input:focus { border-color: #2563eb; outline: none; }
+        #result-form-area { width: 95%; max-height: 180px; overflow-y: auto; padding-right: 6px; margin-bottom: 12px; }
+        .form-group { width: 100%; text-align: left; margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #9ca3af; }
+        .form-group input { 
+            width: 100%; padding: 12px; background: rgba(17, 24, 39, 0.8); 
+            border: 1px solid #374151; color: white; border-radius: 10px; font-size: 15px; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s;
+        }
+        .form-group input:focus { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); outline: none; }
         
-        .row-group { display: flex; gap: 8px; width: 100%; }
-        .agree-box { display: flex; align-items: center; width: 95%; margin: 5px 0 12px 0; font-size: 12px; color: #6b7280; text-align: left; }
-        .agree-box input { margin-right: 6px; width: 16px; height: 16px; }
+        .row-group { display: flex; gap: 10px; width: 100%; }
+        .agree-box { display: flex; align-items: center; width: 95%; margin: 5px 0 15px 0; font-size: 13px; color: #9ca3af; text-align: left; }
+        .agree-box input { margin-right: 8px; width: 18px; height: 18px; cursor: pointer; }
 
-        .welcome-back-msg { background: #eff6ff; border: 1px dashed #bfdbfe; color: #1d4ed8; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 10px; width: 100%; text-align: center; display: none; }
+        .welcome-back-msg { background: rgba(37, 99, 235, 0.15); border: 1px dashed #3b82f6; color: #60a5fa; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; width: 100%; text-align: center; display: none; }
+        
+        /* 커스텀 스크롤바 세팅 (폼, 뱃지 영역용) */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.5); }
     </style>
 </head>
 <body>
@@ -115,10 +183,10 @@
     </div>
 
     <div id="screen-start" class="screen active">
-        <div class="intro-img">🏫</div>
-        <h1>성일 Speed Clicker</h1>
-        <p>30초 동안 화면에 나타나는 문구 중<br><strong>우리 학교의 장점만</strong> 빠르게 터치하세요!<br><br><span style="color:#ef4444;">※ 우측 상단의 🔇 버튼을 눌러 소리를 켜주세요!</span></p>
-        <button class="btn" onclick="startGame()">게임 시작하기</button>
+        <div class="intro-img">🚀</div>
+        <h1>SUNGIL<br>SPACE CLICKER</h1>
+        <p>은하계 탐사 대작전! 30초 동안<br><strong>성일고의 대박 장점 행성들만</strong><br>광속으로 터치해 파괴하세요!<br><br><span style="color:#f43f5e; font-weight: bold;">⚠️ 블랙홀 함정 카드는 감점 처리됩니다!</span></p>
+        <button class="btn" onclick="startGame()">START MISSION</button>
     </div>
 
     <div id="screen-game" class="screen">
@@ -126,7 +194,7 @@
             <div class="timer-container">
                 <div id="timer-bar" class="timer-bar"></div>
             </div>
-            <div id="timer-text" class="timer-text">남은 시간: 30.0초</div>
+            <div id="timer-text" class="timer-text">TIME: 30.0s</div>
         </div>
         
         <div class="game-board-wrapper">
@@ -149,61 +217,62 @@
         </div>
 
         <div class="score-container">
-            <span>Score:</span>
+            <span>SCORE:</span>
             <span id="score-num" class="score-num">0</span>
         </div>
     </div>
 
     <div id="screen-result" class="screen">
-        <h1>게임 종료!</h1>
+        <h1>MISSION CLEAR</h1>
         <div class="result-box">
-            <p>나의 최종 점수는?</p>
+            <p>최종 탐사 스코어</p>
             <div class="final-score" id="result-score">0점</div>
-            <div class="school-info-title">⭕ 방금 매칭된 성일의 대박 혜택들!</div>
+            <div class="school-info-title">🛸 데이터 전송 완료된 성일고 인프라 목록</div>
             <div id="school-info-list" class="info-badge-container"></div>
         </div>
         
         <div id="result-form-area">
-            <div id="welcome-badge" class="welcome-back-msg">기존 정보를 기반으로 자동 입력되었습니다! 🔄</div>
+            <div id="welcome-badge" class="welcome-back-msg">인프라 포트 재연결 완료! 자동 매칭되었습니다. 🔄</div>
 
             <div class="form-group">
-                <label for="student-middle-school">출신 중학교</label>
+                <label for="student-middle-school">출신 중학교명</label>
                 <input type="text" id="student-middle-school" placeholder="예) 성일중학교">
             </div>
 
             <div class="row-group">
                 <div class="form-group">
                     <label for="student-grade">학년</label>
-                    <input type="number" id="student-grade" placeholder="예) 3" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" id="student-grade" placeholder="3" pattern="[0-9]*" inputmode="numeric">
                 </div>
                 <div class="form-group">
                     <label for="student-class">반</label>
-                    <input type="number" id="student-class" placeholder="예) 5" pattern="[0-9]*" inputmode="numeric">
+                    <input type="number" id="student-class" placeholder="5" pattern="[0-9]*" inputmode="numeric">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="student-name">이름</label>
-                <input type="text" id="student-name" placeholder="이름을 입력하세요">
+                <label for="student-name">대원 이름</label>
+                <input type="text" id="student-name" placeholder="성명을 입력하세요">
             </div>
 
             <div class="form-group">
-                <label for="student-phone">휴대폰 번호</label>
-                <input type="tel" id="student-phone" placeholder="숫자만 입력 (예: 01012345678)" inputmode="tel">
+                <label for="student-phone">휴대폰 통신 번호</label>
+                <input type="tel" id="student-phone" placeholder="하이픈 없이 입력 (01012345678)" inputmode="tel">
             </div>
         </div>
         
         <div class="agree-box">
             <input type="checkbox" id="privacy-agree">
-            <label for="privacy-agree">개인정보 수집 및 랭킹 등록에 동의합니다.</label>
+            <label for="privacy-agree">우주 연전 데이터 전송 및 개인정보 수집에 동의합니다.</label>
         </div>
 
-        <button class="btn" id="submit-btn" onclick="submitRanking()">랭킹 등록 및 제출</button>
+        <button class="btn" id="submit-btn" onclick="submitRanking()">RANKING REGISTRY</button>
     </div>
 
 </div>
 
 <script>
+    // ★ 구글 배포 시 생성된 본인만의 GAS 웹 앱 URL 주소를 입력하세요!
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyaFkeO8wBPnCwqp81-xz6BiWn__8lYwBNz4OlSvq7ISxgUiJky1gpm4yXXJTEXIP8b6g/exec";
 
     const moleData = {
@@ -226,11 +295,13 @@
     let activeMoleIndex = -1;
     let currentMoleType = null; 
     let isSubmitting = false;
-    let currentSpeed = 1000; 
-
-    // [사운드 시스템] 초기 상태 음소거(Mute) 상태로 선언하여 연동 안정화
+    
+    // [수정] 단계(Level) 및 속도 시스템 변수
+    let currentLevel = 1; 
+    let currentSpeed = 1000; // 1단계 기본 속도 (1초)
     let isSoundEnabled = false;
 
+    // 사운드 파일 에셋 로드 세팅
     const audioBGM = new Audio('bgm.mp3');
     audioBGM.loop = true;
     audioBGM.volume = 0.5;
@@ -246,7 +317,6 @@
 
     [audioBGM, audioSuccess, audioFail].forEach(audio => { audio.load(); });
 
-    // [추가] 사운드 토글(Mute/Unmute) 함수 - 유저의 수동 클릭 이벤트 가로채기 핵심
     function toggleSound() {
         const soundBtn = document.getElementById('sound-btn');
         isSoundEnabled = !isSoundEnabled;
@@ -255,7 +325,6 @@
             soundBtn.innerText = "🔊";
             soundBtn.classList.remove('muted');
             
-            // 유저 터치 즉시 브라우저 오디오 시스템 락 강제 해제 공사
             audioSuccess.play().then(() => { audioSuccess.pause(); audioSuccess.currentTime = 0; });
             audioFail.play().then(() => { audioFail.pause(); audioFail.currentTime = 0; });
             audioBGM.play().then(() => { audioBGM.pause(); audioBGM.currentTime = 0; });
@@ -275,16 +344,15 @@
     function startGame() {
         score = 0;
         timeLeft = 30.0;
-        currentSpeed = 1000; 
+        currentLevel = 1;   // 1단계 시작
+        currentSpeed = 1000; // 초기 속도 1초
         isSubmitting = false;
         
         document.getElementById('score-num').innerText = score;
         updateTimerUI();
         
-        // 상단 글로벌 헤더(소리 버튼) 숨기기 (게임 몰입을 위해 제거)
         document.getElementById('global-header').style.display = 'none';
 
-        // 사용자가 사운드를 켜둔 상태라면 배경음악 재생 개시
         if (isSoundEnabled) {
             audioBGM.currentTime = 0;
             audioBGM.play().catch(e => console.log(e));
@@ -302,13 +370,62 @@
             }
             
             updateTimerUI();
+            checkLevelSystem(); // [추가] 매 0.1초마다 시간이 줄어들며 단계를 체크합니다.
 
-            if (Math.round(timeLeft * 10) % 50 === 0 && timeLeft > 0) {
-                currentSpeed = Math.max(450, currentSpeed * 0.85); 
-            }
         }, 100);
 
         popMoleLoop();
+    }
+
+    // [추가] 1단계(30~20초), 2단계(20~10초), 3단계(10~0초) 관리 시스템
+    function checkLevelSystem() {
+        // 2단계 진입 조건 (남은 시간 20초 이하이고, 아직 1단계일 때)
+        if (timeLeft <= 20.0 && timeLeft > 10.0 && currentLevel === 1) {
+            currentLevel = 2;
+            currentSpeed = 850; // 2단계 속도 향상 (0.65초마다 등장)
+            triggerSpeedUpEffect("LEVEL 2", "SPEED UP!");
+        } 
+        // 3단계 진입 조건 (남은 시간 10초 이하이고, 아직 2단계일 때)
+        else if (timeLeft <= 10.0 && currentLevel === 2) {
+            currentLevel = 3;
+            currentSpeed = 650; // 3단계 광속 모드 (0.43초마다 등장)
+            triggerSpeedUpEffect("FINAL LEVEL", "CRAZY SPEED!!");
+        }
+    }
+
+    // [추가] 판 위로 SPEED UP 문구를 띄워주는 시각 효과 함수
+    function triggerSpeedUpEffect(titleText, subText) {
+        const effectLayer = document.getElementById('full-screen-effect');
+        const effectSymbol = document.getElementById('effect-symbol');
+        const effectScore = document.getElementById('effect-score');
+
+        // 기존 이펙트 클래스 초기화
+        effectLayer.classList.remove('animate-correct', 'animate-wrong');
+        void effectLayer.offsetWidth; // 애니메이션 리셋 트리거
+
+        // O, X 대신 LEVEL 문구와 SPEED UP 세팅
+        effectSymbol.innerText = titleText;
+        effectSymbol.style.fontSize = "50px"; // 글자가 기니까 폰트 크기 조절
+        effectSymbol.style.color = "#f59e0b"; // 경고/업그레이드 느낌의 주황/노란 네온
+        effectSymbol.style.textShadow = "0 0 20px #f59e0b, 0 0 40px #d97706";
+
+        effectScore.innerText = subText;
+        effectScore.style.color = "#fff";
+        effectScore.style.fontSize = "32px";
+        effectScore.style.textShadow = "0 0 15px #f43f5e"; // 핫핑크 네온 스피드업
+
+        // 정답 이펙트 애니메이션(커지면서 부드럽게 사라짐)을 빌려서 연출
+        effectLayer.classList.add('animate-correct');
+
+        // 이펙트가 끝나면 다음 유저 클릭 시 O, X가 정상 크기로 나오도록 원래 스타일로 복구 예약
+        setTimeout(() => {
+            effectSymbol.style.fontSize = "";
+            effectSymbol.style.color = "";
+            effectSymbol.style.textShadow = "";
+            effectScore.style.color = "";
+            effectScore.style.fontSize = "";
+            effectScore.style.textShadow = "";
+        }, 500);
     }
 
     function updateTimerUI() {
@@ -316,7 +433,9 @@
         const barElement = document.getElementById('timer-bar');
         
         barElement.style.width = `${percentage}%`;
-        document.getElementById('timer-text').innerText = `남은 시간: ${timeLeft.toFixed(1)}초`;
+        
+        // [수정] 타이머 텍스트 쪽에 현재 플레이 중인 단계(LEVEL)도 직관적으로 표시
+        document.getElementById('timer-text').innerText = `LV.${currentLevel} | TIME: ${timeLeft.toFixed(1)}s`;
         
         if (timeLeft <= 10.0) {
             barElement.classList.add('timer-urgent');
@@ -345,6 +464,7 @@
         moleElement.className = `mole ${currentMoleType}`;
         holeElement.classList.add('active');
 
+        // [수정] 고정 속도가 아니라 현재 레벨에 맞춰 변하는 currentSpeed를 타임아웃에 적용
         moleTimeout = setTimeout(popMoleLoop, currentSpeed);
     }
 
@@ -363,14 +483,14 @@
         void effectLayer.offsetWidth; 
 
         if (currentMoleType === 'correct') {
-            const calculatedScore = Math.round(10 + (1000 - currentSpeed) / 25);
+            // [수정] 속도가 빨라질수록(currentSpeed가 작아질수록) 기본점수 외에 보너스 점수가 더 커지도록 보정
+            const calculatedScore = Math.round(10 + (1000 - currentSpeed) / 20);
             score += calculatedScore;
             
             effectSymbol.innerText = "O";
             effectScore.innerText = `+${calculatedScore}`;
             effectLayer.classList.add('animate-correct');
             
-            // 사운드가 활성화된 상태에서만 효과음 재생
             if (isSoundEnabled) {
                 audioSuccess.currentTime = 0;
                 audioSuccess.play().catch(e => {});
@@ -445,11 +565,11 @@
         const agree = document.getElementById('privacy-agree').checked;
 
         if (!middleSchool || !grade || !classNum || !name || !phone) {
-            alert("모든 항목을 빈칸 없이 정확히 입력해 주세요.");
+            alert("모든 제어 시스템 항목을 빈칸 없이 입력 완료해 주세요.");
             return;
         }
         if (!agree) {
-            alert("개인정보 수집 및 랭킹 등록에 동의하셔야 제출이 가능합니다.");
+            alert("랭킹 등록 및 개인정보 전송 승인에 체크해 주세요.");
             return;
         }
 
@@ -462,14 +582,14 @@
         } else if (phone.length === 10) {
             phone = phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
         } else {
-            alert("올바른 휴대폰 번호 형식이 아닙니다. (예: 01012345678)");
+            alert("휴대폰 양식이 올바르지 않습니다. 다시 검토하세요.");
             return;
         }
 
         isSubmitting = true;
         const submitBtn = document.getElementById('submit-btn');
-        submitBtn.innerText = "전송 중...";
-        submitBtn.style.background = "#9ca3af";
+        submitBtn.innerText = "DATA TRANSMITTING...";
+        submitBtn.style.background = "#4b5563";
 
         const payload = {
             middleSchool: middleSchool,
@@ -488,14 +608,14 @@
         })
         .then(() => {
             localStorage.setItem('sungil_student_info', JSON.stringify(payload));
-            alert("점수가 성공적으로 매칭되었습니다!\n최고 점수 달성 시에만 순위가 업그레이드됩니다.");
+            alert("성공적으로 서버 메인 데이터베이스에 기록되었습니다! 🛰️");
             location.reload(); 
         })
         .catch(err => {
             console.error(err);
-            alert("등록 중 오류가 발생했습니다. 담당 선생님께 문의하세요.");
+            alert("데이터 전송 주파수 에러 발생. 담당 교사에게 보고하세요.");
             isSubmitting = false;
-            submitBtn.innerText = "랭킹 등록 및 제출";
+            submitBtn.innerText = "RANKING REGISTRY";
             submitBtn.style.background = "#2563eb";
         });
     }
