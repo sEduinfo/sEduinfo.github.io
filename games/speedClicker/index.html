@@ -246,6 +246,21 @@
 
         .welcome-back-msg { background: rgba(37, 99, 235, 0.15); border: 1px dashed #3b82f6; color: #60a5fa; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; width: 100%; text-align: center; display: none; }
         
+        /* 🆕 랭킹 보드 전용 디자인 스타일 */
+        #ranking-modal table th { font-weight: bold; letter-spacing: 0.5px; }
+        .rank-tr { border-bottom: 1px solid rgba(55, 65, 81, 0.4); transition: background 0.2s; }
+        .rank-tr:hover { background: rgba(56, 189, 248, 0.05); }
+        .rank-td-num { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 16px; text-align: center; padding: 12px 5px; }
+        
+        /* 1, 2, 3등 오락실 메달리스트 특별 네온 강조 컬러 */
+        .rank-gold { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
+        .rank-silver { color: #e5e7eb; text-shadow: 0 0 10px rgba(229, 231, 235, 0.6); }
+        .rank-bronze { color: #b45309; text-shadow: 0 0 10px rgba(180, 83, 9, 0.6); }
+        
+        .rank-td-school { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 12px 5px; color: #9ca3af; }
+        .rank-td-name { font-weight: bold; padding: 12px 5px; }
+        .rank-td-score { font-family: 'Orbitron', sans-serif; font-weight: bold; color: #38bdf8; text-align: right; padding: 12px 5px; text-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 3px; }
@@ -279,6 +294,32 @@
         </div>
     </div>
 
+    <div id="ranking-modal" class="modal-overlay" onclick="closeRanking()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="border-color: #38bdf8; box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); max-width: 400px;">
+            <div class="modal-title" style="color: #38bdf8; text-shadow: 0 0 15px #38bdf8;">TOP 10 RANKERS</div>
+            
+            <div id="ranking-loading" style="text-align: center; color: #9ca3af; padding: 30px 0; font-size: 16px;">
+                🛰️ 은하계 서버 연결 중...
+            </div>
+            
+            <div id="ranking-list-wrapper" class="modal-scroll" style="max-height: 350px; display: none;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 15px; text-align: left; color: #e5e7eb;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #1f2937; color: #9ca3af; font-family: 'Orbitron', sans-serif; font-size: 13px;">
+                            <th style="padding: 8px 5px;">RANK</th>
+                            <th style="padding: 8px 5px;">MIDDLE SCHOOL</th>
+                            <th style="padding: 8px 5px;">NAME</th>
+                            <th style="padding: 8px 5px; text-align: right;">SCORE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-tbody">
+                        </tbody>
+                </table>
+            </div>
+            <button class="btn btn-secondary" style="width:100%; margin-top:20px; margin-bottom:0;" onclick="closeRanking()">복귀하기</button>
+        </div>
+    </div>
+
     <div id="screen-start" class="screen active">
         <div class="intro-img">🚀</div>
         
@@ -290,7 +331,10 @@
         <p>은하계 탐사 대작전! 30초 동안<br><strong>성일정보고의 대박 장점 행성들만</strong><br>광속으로 터치해 파괴하세요!</p>
         
         <button class="btn" onclick="startCountdown()">START MISSION</button>
-        <button class="btn btn-secondary" onclick="openRules()">게임 규칙 보기</button>
+        <div style="display: flex; gap: 10px; width: 85%; max-width: 300px; justify-content: center;">
+            <button class="btn btn-secondary" onclick="openRules()" style="flex: 1; padding: 12px 10px; font-size: 15px;">게임 규칙</button>
+            <button class="btn btn-secondary" onclick="openRanking()" style="flex: 1; padding: 12px 10px; font-size: 15px; border-color: #38bdf8 !important; color: #38bdf8;">랭킹 보기</button>
+        </div>
     </div>
 
     <div id="screen-game" class="screen">
@@ -380,7 +424,7 @@
 
 <script>
     // 구글 스프레드시트 배포 주소 연동 완료
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyaFkeO8wBPnCwqp81-xz6BiWn__8lYwBNz4OlSvq7ISxgUiJky1gpm4yXXJTEXIP8b6g/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxBL8__j1uSxT9wy1SISIrMUmhbjlFk1jr8F3iB8CkltvIBGmfJB9Z25U3o5FeLsJLOyw/exec";
 
     // 🎯 [학과 데이터 리뉴얼] 성일정보고 실제 학과(정답) vs 타교/더미 학과(오답)
     const moleData = {
@@ -426,6 +470,75 @@
 
     function openRules() { document.getElementById('rules-modal').classList.add('active'); }
     function closeRules() { document.getElementById('rules-modal').classList.remove('active'); }
+
+    // 🆕 [랭킹 시스템 추가] 모달 제어 함수
+    function openRanking() { 
+        document.getElementById('ranking-modal').classList.add('active');
+        fetchLiveRanking(); // 팝업이 열릴 때 실시간으로 구글 서버 데이터 트래킹 시작
+    }
+    function closeRanking() { document.getElementById('ranking-modal').classList.remove('active'); }
+
+    // 🆕 구글 웹 앱 서버로부터 전체 데이터를 받아와 상위 10명을 소팅하는 실시간 연동 펑션
+    function fetchLiveRanking() {
+        const loadingDiv = document.getElementById('ranking-loading');
+        const wrapperDiv = document.getElementById('ranking-list-wrapper');
+        const tbody = document.getElementById('ranking-tbody');
+        
+        loadingDiv.style.display = 'block';
+        loadingDiv.innerText = "🛰️ 은하계 서버 연결 중...";
+        wrapperDiv.style.display = 'none';
+        tbody.innerHTML = "";
+
+        // 본 시스템은 GAS의 doGet(e) 메소드를 통해 최신 DB를 JSON 포맷으로 리턴받습니다.
+        fetch(GAS_WEB_APP_URL, { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                loadingDiv.innerText = "☄️ 아직 등록된 탐사 대원이 없습니다!";
+                return;
+            }
+
+            // 🎯 [오락실 동점자 처리 엔진 결합 소팅]
+            // 1순위: 스코어 내림차순(점수 높은 순), 2순위: 등록시간 오름차순(동점일 땐 먼저 전송한 선착순)
+            data.sort((a, b) => {
+                if (Number(b.score) !== Number(a.score)) {
+                    return Number(b.score) - Number(a.score);
+                }
+                return new Date(a.timestamp) - new Date(b.timestamp);
+            });
+
+            // 상위 딱 10명만 슬라이싱 커트라인 적용
+            const top10 = data.slice(0, 10);
+
+            // 받아온 로우 데이터를 테이블용 HTML 컴포넌트로 빌드
+            top10.forEach((item, index) => {
+                const rankNum = index + 1;
+                let rankClass = "";
+                
+                // 1,2,3위 메달 전용 폰트 스타일 부여 스타일링
+                if (rankNum === 1) rankClass = "rank-gold";
+                else if (rankNum === 2) rankClass = "rank-silver";
+                else if (rankNum === 3) rankClass = "rank-bronze";
+
+                const tr = document.createElement('tr');
+                tr.className = "rank-tr";
+                tr.innerHTML = `
+                    <td class="rank-td-num ${rankClass}">${rankNum}</td>
+                    <td class="rank-td-school" title="${item.middleSchool}">${item.middleSchool}</td>
+                    <td class="rank-td-name">${item.name}</td>
+                    <td class="rank-td-score">${Number(item.score).toLocaleString()}점</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            loadingDiv.style.display = 'none';
+            wrapperDiv.style.display = 'block';
+        })
+        .catch(err => {
+            console.error(err);
+            loadingDiv.innerText = "💥 주파수 통신 에러! (구글 스크립트 doGet 함수 상태를 점검하세요)";
+        });
+    }
 
     // 3초 카운트다운 및 모바일 사운드 잠금장치 해제 트랙
     function startCountdown() {
