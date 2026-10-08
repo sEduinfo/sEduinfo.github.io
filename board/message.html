@@ -207,18 +207,18 @@
   <div class="lantern-card">
     <div class="field">
       <label for="name">보내는 사람 <span class="counter"><span id="nameCount">0</span>/10</span></label>
-      <input type="text" id="name" maxlength="10" placeholder="이름 또는 반 이름을 적어주세요" autocomplete="off">
+      <input type="text" id="name" placeholder="이름 또는 반 이름을 적어주세요" autocomplete="off">
     </div>
     <div class="field">
       <label for="content">응원 메시지 <span class="counter"><span id="contentCount">0</span>/36</span></label>
-      <textarea id="content" maxlength="36" placeholder="짧고 강렬한 한마디를 남겨주세요" rows="3"></textarea>
+      <textarea id="content" placeholder="짧고 강렬한 한마디를 남겨주세요" rows="3"></textarea>
     </div>
     <button class="send-btn" id="sendBtn" onclick="send()">풍등 띄우기 🏮</button>
   </div>
 
   <p class="hint">띄운 풍등은 잠시 후 비디오월 밤하늘에 떠오를 거예요</p>
 
-  <p class="notice">※ 아이폰(사파리)에서 화면이 이상하게 보인다면, 기기가 다크 모드로<br>설정되어 있을 수 있어요. 설정에서 다크 모드를 잠시 꺼주세요.</p>
+  <p class="notice">※ 아이폰(사파리)에서 화면이 이상하게 보인다면,<br> 기기가 다크 모드로 설정되어 있을 수 있어요.<br>설정에서 다크 모드를 잠시 꺼주세요.</p>
 
   <div class="toast-wrap" id="toastWrap">
     <div class="toast-card" id="toastCard">
@@ -234,9 +234,29 @@
   const contentEl = document.getElementById('content');
   const nameCountEl = document.getElementById('nameCount');
   const contentCountEl = document.getElementById('contentCount');
+  const NAME_MAX = 10;
+  const CONTENT_MAX = 36;
 
-  nameEl.addEventListener('input', () => { nameCountEl.textContent = nameEl.value.length; });
-  contentEl.addEventListener('input', () => { contentCountEl.textContent = contentEl.value.length; });
+  // 글자수 제한을 HTML의 maxlength 속성으로 걸면, 한글을 빠르게 입력할 때
+  // (특히 모음/자음이 조합되는 중에) 글자가 잘리거나 이상하게 써지는 문제가
+  // 생길 수 있습니다. 그래서 maxlength 속성 대신, 조합이 끝난 뒤에만 글자수를
+  // 확인해서 자르는 방식으로 직접 처리합니다.
+  function setupLengthGuard(el, max, counterEl) {
+    let composing = false;
+    function enforce() {
+      if (el.value.length > max) el.value = el.value.slice(0, max);
+      counterEl.textContent = el.value.length;
+    }
+    el.addEventListener('compositionstart', () => { composing = true; });
+    el.addEventListener('compositionend', () => { composing = false; enforce(); });
+    el.addEventListener('input', () => {
+      if (!composing) enforce();
+      else counterEl.textContent = el.value.length;
+    });
+  }
+
+  setupLengthGuard(nameEl, NAME_MAX, nameCountEl);
+  setupLengthGuard(contentEl, CONTENT_MAX, contentCountEl);
 
   function showToast({ icon, message, isError = false, autoHideMs = null }) {
     const wrap = document.getElementById('toastWrap');
@@ -256,8 +276,9 @@
   }
 
   function send() {
-    const name = nameEl.value.trim();
-    const content = contentEl.value.trim();
+    // 한글 조합 중에 전송 버튼을 눌렀을 가능성까지 대비한 마지막 안전장치입니다.
+    const name = nameEl.value.trim().slice(0, NAME_MAX);
+    const content = contentEl.value.trim().slice(0, CONTENT_MAX);
     const btn = document.getElementById('sendBtn');
 
     if (!name || !content) {
