@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="color-scheme" content="light only" />
 <title>응원 풍등 띄우기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
+  /* 아이폰 사파리 등에서 기기가 다크 모드일 때 입력창/버튼 색이 멋대로
+     바뀌지 않도록, 이 페이지는 항상 라이트 모드로 그려지게 고정합니다. */
+  :root { color-scheme: light only; }
   html, body {
     width:100%; min-height:100%;
     background:#050a0f;
@@ -142,6 +146,18 @@
     max-width:320px;
   }
 
+  .notice {
+    position:relative; z-index:1;
+    margin-top:1rem;
+    text-align:center;
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:500;
+    font-size:0.72rem;
+    line-height:1.5;
+    color: rgba(220,230,245,0.4);
+    max-width:300px;
+  }
+
   /* ---------------- 알림 토스트 ---------------- */
   .toast-wrap {
     position:fixed; left:0; right:0; top:0; bottom:0;
@@ -201,6 +217,8 @@
   </div>
 
   <p class="hint">띄운 풍등은 잠시 후 비디오월 밤하늘에 떠오를 거예요</p>
+
+  <p class="notice">※ 아이폰(사파리)에서 화면이 이상하게 보인다면, 기기가 다크 모드로<br>설정되어 있을 수 있어요. 설정에서 다크 모드를 잠시 꺼주세요.</p>
 
   <div class="toast-wrap" id="toastWrap">
     <div class="toast-card" id="toastCard">
