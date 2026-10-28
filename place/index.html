@@ -441,6 +441,20 @@ async function makeFirebaseBackend() {
     async checkTeacher() {
       try { return (await getDoc(doc(db, 'teachers', me.email))).exists(); } catch (e) { return false; }
     },
+    // ----- 관리자: 선생님 명단 -----
+    async listTeachers() {
+      const s = await getDocs(collection(db, 'teachers'));
+      return s.docs.map(d => d.id).sort();
+    },
+    // 이메일 배열을 teachers 컬렉션에 한꺼번에 등록 (배치는 최대 500건이라 나눠서 기록)
+    async addTeachers(emails) {
+      for (let i = 0; i < emails.length; i += 400) {
+        const b = writeBatch(db);
+        emails.slice(i, i + 400).forEach(e => b.set(doc(db, 'teachers', e), { addedBy: me.email, addedAt: serverTimestamp() }));
+        await b.commit();
+      }
+    },
+    async removeTeacher(email) { const b = writeBatch(db); b.delete(doc(db, 'teachers', email)); await b.commit(); },
     async getSettings() {
       try { const s = await getDoc(doc(db, 'settings', 'app')); return { writeOpen: s.exists() && s.data().writeOpen === true }; }
       catch (e) { return { writeOpen: false }; }
@@ -630,6 +644,9 @@ function makeDemoBackend() {
     async setMyClass(c) { mem.myClass = c; save(); },
     async checkAdmin() { return !!mem.demoAdmin; },
     async checkTeacher() { return !!mem.demoAdmin; },
+    async listTeachers() { return wait(Object.keys(mem.teachers ||= {}).sort()); },
+    async addTeachers(emails) { mem.teachers ||= {}; emails.forEach(e => { mem.teachers[e] = true; }); save(); },
+    async removeTeacher(email) { delete (mem.teachers ||= {})[email]; save(); },
     async setDemoAdmin(v) { mem.demoAdmin = v; save(); },
     async reset() { mem = demoSeed(); save(); },
     async getSettings() { return { writeOpen: !!mem.settings.writeOpen }; },
@@ -737,7 +754,7 @@ const S = {
   page: 'home', trips: [], tripsLoading: false, tripsError: null, tripTab: 'mine', tripQ: '',
   trip: null, classFilter: 'all', cat: 'all', price: 'all', sort: 'reviews', q: '',
   places: [], loading: false, loadError: null,
-  detail: null, add: null, addTrip: null, pick: null, reported: [],
+  detail: null, add: null, addTrip: null, pick: null, reported: [], teacherList: [], teacherDraft: '',
   sheetView: null, sheetOpen: false, busy: false
 };
 let B = null;
@@ -1394,6 +1411,7 @@ function renderMenu() {
       ${S.admin ? `<div class="admin-box col"><b>관리자 메뉴</b>
         <button class="btn ghost full" data-act="adm-toggle-write">${S.writeOpen ? '🔒 추천 등록 닫기' : '🔓 추천 등록 열기'}</button>
         <button class="btn ghost full" data-act="adm-reported">🚨 신고된 글 보기</button>
+        <button class="btn ghost full" data-act="adm-teachers">👩‍🏫 선생님 명단 관리</button>
       </div>` : ''}
       ${B.demo ? `<button class="btn ghost full" data-act="demo-admin">${S.admin ? '🧪 학생 화면으로 보기' : '🧪 관리자 화면으로 보기'}</button>
         <button class="btn ghost full" data-act="demo-reset">🧪 데모 데이터 초기화</button>` : ''}
@@ -1432,6 +1450,51 @@ function renderReported(opt = {}) {
           <button data-act="adm-del-review" data-pid="${esc(r.placeId)}" data-rid="${esc(r.id)}">삭제</button>
         </div>
       </div>`).join('')}</div>` : '<p class="hint center">신고된 글이 없어요 👍</p>'}
+  `, { tall: true, keepScroll: opt.keepScroll });
+}
+
+// ----- 선생님 명단 (소풍지를 만들 수 있는 사람) -----
+const EMAIL_RE = /^[^\s@,;<>"']+@[^\s@,;<>"']+\.[^\s@,;<>"']+$/;
+// 붙여넣은 글에서 이메일만 골라냄 (엑셀·CSV·줄바꿈·쉼표 어떤 형태든)
+function parseEmails(text) {
+  const found = String(text || '').toLowerCase().match(/[^\s@,;<>"'()]+@[^\s@,;<>"'()]+\.[a-z]{2,}/g) || [];
+  return [...new Set(found)].filter(e => EMAIL_RE.test(e));
+}
+async function openTeachers() {
+  openSheet('<div class="loading">불러오는 중…</div>', { tall: true });
+  try { S.teacherList = await B.listTeachers(); }
+  catch (e) { console.error(e); S.teacherList = null; }
+  S.teacherDraft = S.teacherDraft || '';
+  renderTeachers();
+}
+function teacherPreview() {
+  const emails = parseEmails(S.teacherDraft);
+  const have = new Set(S.teacherList || []);
+  const fresh = emails.filter(e => !have.has(e));
+  const other = C.allowedDomain ? fresh.filter(e => !e.endsWith('@' + C.allowedDomain)).length : 0;
+  if (!emails.length) return '붙여넣은 내용에서 이메일을 찾으면 여기에 개수가 표시돼요.';
+  return `이메일 ${emails.length}개 찾음 · 새로 등록 <b>${fresh.length}명</b>${emails.length - fresh.length ? ` · 이미 등록 ${emails.length - fresh.length}명` : ''}`
+    + (other ? `<br>⚠️ 학교 도메인(@${esc(C.allowedDomain)})이 아닌 주소 ${other}개 포함` : '');
+}
+function renderTeachers(opt = {}) {
+  S.sheetView = 'teachers';
+  const list = S.teacherList;
+  openSheet(`
+    <div class="sheet-head">
+      <div><button class="link" data-act="menu">‹ 내 정보</button><h2>선생님 명단</h2>
+        <p class="hint">여기 등록된 선생님은 소풍지를 추가할 수 있어요. 관리자는 등록하지 않아도 돼요.</p></div>
+      <button class="x" data-act="close" aria-label="닫기">✕</button>
+    </div>
+    <label class="fl" for="teacherText">이메일 한꺼번에 붙여넣기</label>
+    <textarea id="teacherText" rows="6" placeholder="엑셀이나 CSV에서 이메일 열을 그대로 복사해 붙여넣으세요.&#10;줄바꿈, 쉼표, 공백 어떤 형태든 이메일만 골라 등록해요.">${esc(S.teacherDraft)}</textarea>
+    <p class="hint" id="teacherPreview">${teacherPreview()}</p>
+    <button class="btn primary full mt" data-act="adm-add-teachers">명단에 등록하기</button>
+    <div class="section" style="margin-top:20px">
+      <h4>등록된 선생님 ${list ? list.length + '명' : ''}</h4>
+      ${list === null ? '<p class="hint">명단을 불러오지 못했어요. 규칙이 최신 버전인지 확인해 주세요.</p>'
+        : list.length ? `<div class="menu">${list.map(e => `<div class="menu-row"><span style="overflow-wrap:anywhere">${esc(e)}</span><button class="link" data-act="adm-del-teacher" data-email="${esc(e)}">삭제</button></div>`).join('')}</div>`
+        : '<p class="hint">아직 등록된 선생님이 없어요.</p>'}
+    </div>
   `, { tall: true, keepScroll: opt.keepScroll });
 }
 
@@ -1587,6 +1650,31 @@ const ACT = {
     renderBanner(); renderMenu();
   },
   'adm-reported'() { return openReported(); },
+  'adm-teachers'() { return openTeachers(); },
+  async 'adm-add-teachers'(el) {
+    const have = new Set(S.teacherList || []);
+    const fresh = parseEmails(S.teacherDraft).filter(e => !have.has(e));
+    if (!fresh.length) { toast('새로 등록할 이메일이 없어요'); return; }
+    if (!confirm(`선생님 ${fresh.length}명을 등록할까요?`)) return;
+    el.disabled = true; el.textContent = '등록 중…';
+    try {
+      await B.addTeachers(fresh);
+      S.teacherDraft = '';
+      S.teacherList = await B.listTeachers();
+      toast(`${fresh.length}명을 등록했어요`);
+      renderTeachers();
+    } catch (e) {
+      console.error(e); el.disabled = false; el.textContent = '명단에 등록하기';
+      toast(e.code === 'permission-denied' ? '등록 권한이 없어요. 규칙을 최신 버전으로 게시했는지 확인해 주세요.' : '등록 중 문제가 생겼어요');
+    }
+  },
+  async 'adm-del-teacher'(el) {
+    const email = el.dataset.email;
+    if (!confirm(`${email} 선생님을 명단에서 뺄까요?`)) return;
+    await B.removeTeacher(email);
+    S.teacherList = (S.teacherList || []).filter(e => e !== email);
+    toast('명단에서 뺐어요'); renderTeachers({ keepScroll: true });
+  },
   async 'adm-hide-review'(el) { await B.setReviewHidden(el.dataset.pid, el.dataset.rid, true); toast('숨겼어요'); await afterAdmin(el.dataset.pid); },
   async 'adm-restore-review'(el) { await B.restoreReview(el.dataset.pid, el.dataset.rid); toast('복구했어요 (신고 수 초기화)'); await afterAdmin(el.dataset.pid); },
   async 'adm-del-review'(el) {
@@ -1658,6 +1746,7 @@ function wireEvents() {
     const id = e.target.id;
     if (id === 'rtext' && S.add) { S.add.form.text = e.target.value; $('#cnt').textContent = e.target.value.length; }
     if (id === 'tripName' && S.addTrip) S.addTrip.form.name = e.target.value;
+    if (id === 'teacherText') { S.teacherDraft = e.target.value; $('#teacherPreview').innerHTML = teacherPreview(); }
     if (id === 'q') { S.q = e.target.value; renderList(); }
     if (id === 'tripQ') { S.tripQ = e.target.value; renderTripList(); }
   });
